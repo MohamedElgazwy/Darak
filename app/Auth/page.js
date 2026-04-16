@@ -4,34 +4,29 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import api from "../services/api"; // استدعاء ملف الاتصال الجديد
+import api from "../services/api";
 
 export default function AuthPage() {
   const router = useRouter();
   const [isLogin, setIsLogin] = useState(true);
-  const [step, setStep] = useState(1); // 1: Form, 2: OTP
+  const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   const [formData, setFormData] = useState({
     name: "",
-    email: "", // أو الهاتف حسب الـ Use Case
+    email: "",
     phone: "",
     password: "",
-    confirmPassword: "",
-    role: "Seeker", // القيم الافتراضية: Seeker, Owner, Agency
+    role: "Seeker",
     otp: "",
   });
 
   const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-    setError(""); // مسح الأخطاء عند الكتابة
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError("");
   };
 
-  // 1. معالجة إرسال النموذج الأساسي
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -39,23 +34,17 @@ export default function AuthPage() {
 
     try {
       if (isLogin) {
-        // --- منطق تسجيل الدخول [cite: 291] ---
         const response = await api.post("/auth/login", {
           email: formData.email,
           password: formData.password,
         });
 
-        // تخزين التوكن وبيانات المستخدم
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("user", JSON.stringify(response.data.user));
 
-        // التوجيه حسب الدور (يمكن تعديل المسارات لاحقاً)
-        if (response.data.user.role === "Admin")
-          router.push("/admin/dashboard");
+        if (response.data.user.role === "Admin") router.push("/admin/dashboard");
         else router.push("/dashboard");
       } else {
-        // --- منطق التسجيل (طلب OTP)  ---
-        // في هذه الخطوة، النظام يتحقق من البيانات ويرسل الـ OTP
         await api.post("/auth/register-init", {
           name: formData.name,
           email: formData.email,
@@ -64,38 +53,31 @@ export default function AuthPage() {
           role: formData.role,
         });
 
-        // الانتقال لخطوة التحقق
         setStep(2);
       }
     } catch (err) {
       console.error(err);
-      setError(
-        err.response?.data?.message || "Something went wrong. Please try again."
-      );
+      setError(err.response?.data?.message || "Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // 2. معالجة التحقق من الـ OTP
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
 
     try {
-      // إرسال الـ OTP لإتمام إنشاء الحساب
       const response = await api.post("/auth/verify-otp", {
         email: formData.email,
         otp: formData.otp,
       });
 
-      // تسجيل الدخول تلقائياً بعد نجاح التحقق
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
-
       router.push("/dashboard");
-    } catch (err) {
+    } catch {
       setError("Invalid OTP. Please check code and try again.");
     } finally {
       setIsLoading(false);
@@ -103,24 +85,21 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex min-h-screen flex-col bg-slate-50">
       <Header />
 
-      <main className="flex-grow bg-gray-50 py-12">
-        <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-8">
-            {/* Tabs (Login vs Sign Up) - Only visible in Step 1 */}
+      <main className="grow pb-14 pt-28">
+        <div className="container-shell max-w-md">
+          <div className="surface-card p-8">
             {step === 1 && (
-              <div className="flex border-b border-gray-200 mb-6">
+              <div className="mb-6 grid grid-cols-2 rounded-xl bg-slate-100 p-1">
                 <button
                   onClick={() => {
                     setIsLogin(true);
                     setError("");
                   }}
-                  className={`flex-1 py-3 text-center font-medium ${
-                    isLogin
-                      ? "text-primary-600 border-b-2 border-primary-600"
-                      : "text-gray-500 hover:text-gray-700"
+                  className={`rounded-lg py-2 text-sm font-semibold transition ${
+                    isLogin ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"
                   }`}
                 >
                   Sign In
@@ -130,10 +109,8 @@ export default function AuthPage() {
                     setIsLogin(false);
                     setError("");
                   }}
-                  className={`flex-1 py-3 text-center font-medium ${
-                    !isLogin
-                      ? "text-primary-600 border-b-2 border-primary-600"
-                      : "text-gray-500 hover:text-gray-700"
+                  className={`rounded-lg py-2 text-sm font-semibold transition ${
+                    !isLogin ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"
                   }`}
                 >
                   Sign Up
@@ -141,152 +118,71 @@ export default function AuthPage() {
               </div>
             )}
 
-            {/* Error Message Display */}
-            {error && (
-              <div className="mb-4 p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-200">
-                {error}
-              </div>
-            )}
+            {error && <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>}
 
-            {/* STEP 1: Main Form */}
             {step === 1 ? (
               <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Sign Up Fields */}
                 {!isLogin && (
                   <>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Full Name
-                      </label>
-                      <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        required={!isLogin}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-primary-500"
-                        placeholder="Enter full name"
-                      />
+                      <label className="mb-1 block text-sm font-medium text-slate-700">Full Name</label>
+                      <input type="text" name="name" value={formData.name} onChange={handleInputChange} required={!isLogin} className="w-full rounded-xl border border-slate-300 px-3 py-2.5 outline-none focus:border-indigo-500" />
                     </div>
-
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Account Type [cite: 206]
-                      </label>
-                      <select
-                        name="role"
-                        value={formData.role}
-                        onChange={handleInputChange}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-primary-500 bg-white"
-                      >
+                      <label className="mb-1 block text-sm font-medium text-slate-700">Account Type</label>
+                      <select name="role" value={formData.role} onChange={handleInputChange} className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-indigo-500">
                         <option value="Seeker">Seeker (Buyer/Tenant)</option>
                         <option value="Owner">Property Owner</option>
                         <option value="Agency">Real Estate Agency</option>
                       </select>
                     </div>
-
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Phone Number
-                      </label>
-                      <input
-                        type="tel"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        required={!isLogin}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-primary-500"
-                        placeholder="+20 1xx xxx xxxx"
-                      />
+                      <label className="mb-1 block text-sm font-medium text-slate-700">Phone Number</label>
+                      <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} required={!isLogin} className="w-full rounded-xl border border-slate-300 px-3 py-2.5 outline-none focus:border-indigo-500" placeholder="+20 1xx xxx xxxx" />
                     </div>
                   </>
                 )}
 
-                {/* Common Fields */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-primary-500"
-                    placeholder="name@example.com"
-                  />
+                  <label className="mb-1 block text-sm font-medium text-slate-700">Email Address</label>
+                  <input type="email" name="email" value={formData.email} onChange={handleInputChange} required className="w-full rounded-xl border border-slate-300 px-3 py-2.5 outline-none focus:border-indigo-500" />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Password
-                  </label>
-                  <input
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-primary-500"
-                    placeholder="••••••••"
-                  />
+                  <label className="mb-1 block text-sm font-medium text-slate-700">Password</label>
+                  <input type="password" name="password" value={formData.password} onChange={handleInputChange} required className="w-full rounded-xl border border-slate-300 px-3 py-2.5 outline-none focus:border-indigo-500" />
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-primary-600 text-white py-3 rounded-lg hover:bg-primary-700 transition-colors font-bold text-base disabled:bg-primary-400 shadow-lg shadow-primary-600/30"
-                >
-                  {isLoading
-                    ? "Processing..."
-                    : isLogin
-                    ? "Sign In"
-                    : "Register & Verify"}
+                <button type="submit" disabled={isLoading} className="btn-primary w-full disabled:cursor-not-allowed disabled:opacity-60">
+                  {isLoading ? "Processing..." : isLogin ? "Sign In" : "Register & Verify"}
                 </button>
               </form>
             ) : (
-              /* STEP 2: OTP Verification Form  */
               <form onSubmit={handleVerifyOTP} className="space-y-6">
                 <div className="text-center">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Verify Your Email
-                  </h3>
-                  <p className="text-sm text-gray-500 mt-1">
-                    We sent a verification code to{" "}
-                    <strong>{formData.email}</strong>
-                  </p>
+                  <h3 className="text-xl font-semibold text-slate-900">Verify Your Email</h3>
+                  <p className="mt-1 text-sm text-slate-600">We sent a verification code to <strong>{formData.email}</strong>.</p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Verification Code (OTP)
-                  </label>
+                  <label className="mb-1 block text-sm font-medium text-slate-700">Verification Code</label>
                   <input
                     type="text"
                     name="otp"
                     value={formData.otp}
                     onChange={handleInputChange}
                     required
-                    className="w-full text-center tracking-widest text-2xl border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-primary-500"
-                    placeholder="123456"
                     maxLength={6}
+                    className="w-full rounded-xl border border-slate-300 px-3 py-3 text-center text-2xl tracking-[0.3em] outline-none focus:border-indigo-500"
+                    placeholder="123456"
                   />
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-primary-600 text-white py-3 rounded-lg hover:bg-primary-700 transition-colors font-bold text-base disabled:bg-primary-400 shadow-lg shadow-primary-600/30"
-                >
+                <button type="submit" disabled={isLoading} className="btn-primary w-full disabled:cursor-not-allowed disabled:opacity-60">
                   {isLoading ? "Verifying..." : "Confirm & Login"}
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() => setStep(1)}
-                  className="w-full text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 py-2 rounded transition-colors"
-                >
+                <button type="button" onClick={() => setStep(1)} className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50">
                   Back to Registration
                 </button>
               </form>

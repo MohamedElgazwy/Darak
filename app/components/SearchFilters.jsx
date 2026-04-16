@@ -17,105 +17,79 @@ export default function SearchFilters({ onFilterChange }) {
   };
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 sticky top-24">
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="font-bold text-slate-900 text-lg">Filters</h3>
+    <div className="surface-card sticky top-24 p-5">
+      <div className="mb-5 flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-slate-900">Filters</h3>
         <button
           onClick={() => {
-            const reset = {
-              priceMin: "",
-              priceMax: "",
-              bedrooms: "",
-              bathrooms: "",
-            };
+            const reset = { priceMin: "", priceMax: "", bedrooms: "", bathrooms: "" };
             setFilters(reset);
             onFilterChange(reset);
           }}
-          className="text-xs text-indigo-600 font-semibold hover:text-indigo-800"
+          className="text-xs font-semibold text-indigo-600 hover:text-indigo-700"
         >
-          Reset All
+          Reset
         </button>
       </div>
 
       <div className="space-y-6">
-        {/* Price Range */}
         <div>
-          <label className="text-sm font-bold text-slate-700 mb-3 block">
-            Price Range (EGP)
-          </label>
-          <div className="flex items-center gap-2">
+          <label className="mb-2 block text-sm font-medium text-slate-700">Price Range (EGP)</label>
+          <div className="grid grid-cols-2 gap-2">
             <input
               type="number"
               placeholder="Min"
               value={filters.priceMin}
               onChange={(e) => handleChange("priceMin", e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500"
             />
-            <span className="text-slate-400">-</span>
             <input
               type="number"
               placeholder="Max"
               value={filters.priceMax}
               onChange={(e) => handleChange("priceMax", e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500"
             />
           </div>
         </div>
 
-        {/* Bedrooms */}
         <div>
-          <label className="text-sm font-bold text-slate-700 mb-3 block">
-            Bedrooms
-          </label>
-          <div className="flex gap-2">
-            {["Any", "1", "2", "3", "4+"].map((opt) => (
+          <p className="mb-2 text-sm font-medium text-slate-700">Bedrooms</p>
+          <div className="grid grid-cols-5 gap-2">
+            {["", "1", "2", "3", "4+"].map((opt, idx) => (
               <button
-                key={opt}
-                onClick={() =>
-                  handleChange("bedrooms", opt === "Any" ? "" : opt)
-                }
-                className={`flex-1 py-2 rounded-lg text-sm font-bold border-2 transition-all ${
-                  filters.bedrooms === opt ||
-                  (opt === "Any" && !filters.bedrooms)
-                    ? "bg-indigo-600 text-white border-indigo-600 shadow-lg"
-                    : "bg-white text-slate-700 border-slate-300 hover:border-slate-400"
+                key={idx}
+                onClick={() => handleChange("bedrooms", opt)}
+                className={`rounded-lg px-2 py-2 text-xs font-semibold transition ${
+                  filters.bedrooms === opt
+                    ? "bg-indigo-600 text-white"
+                    : "border border-slate-300 text-slate-600 hover:bg-slate-50"
                 }`}
               >
-                {opt}
+                {opt || "Any"}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Bathrooms */}
         <div>
-          <label className="text-sm font-bold text-slate-700 mb-3 block">
-            Bathrooms
-          </label>
-          <div className="flex gap-2">
-            {["Any", "1", "2", "3+"].map((opt) => (
+          <p className="mb-2 text-sm font-medium text-slate-700">Bathrooms</p>
+          <div className="grid grid-cols-4 gap-2">
+            {["", "1", "2", "3+"].map((opt, idx) => (
               <button
-                key={opt}
-                onClick={() =>
-                  handleChange("bathrooms", opt === "Any" ? "" : opt)
-                }
-                className={`flex-1 py-2 rounded-lg text-sm font-bold border-2 transition-all ${
-                  filters.bathrooms === opt ||
-                  (opt === "Any" && !filters.bathrooms)
-                    ? "bg-indigo-600 text-white border-indigo-600 shadow-lg"
-                    : "bg-white text-slate-700 border-slate-300 hover:border-slate-400"
+                key={idx}
+                onClick={() => handleChange("bathrooms", opt)}
+                className={`rounded-lg px-2 py-2 text-xs font-semibold transition ${
+                  filters.bathrooms === opt
+                    ? "bg-indigo-600 text-white"
+                    : "border border-slate-300 text-slate-600 hover:bg-slate-50"
                 }`}
               >
-                {opt}
+                {opt || "Any"}
               </button>
             ))}
           </div>
         </div>
-
-        {/* Search Button */}
-        <button className="w-full bg-slate-900 text-white font-bold py-3 rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/40">
-          Apply Filters
-        </button>
       </div>
     </div>
   );

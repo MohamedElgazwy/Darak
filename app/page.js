@@ -3,171 +3,106 @@ import Footer from "./components/Footer";
 import HeroSection from "./components/HeroSection";
 import Link from "next/link";
 
+const featuredProperties = [
+  {
+    title: "Luxury Villa in New Cairo",
+    price: "$350,000",
+    details: "4 beds · 3 baths · 3000 sqft",
+    description: "Modern layout, premium finishes, and immediate access to top schools.",
+  },
+  {
+    title: "Spacious Apartment in Maadi",
+    price: "$1,500/mo",
+    details: "3 beds · 2 baths · 1800 sqft",
+    description: "Family-ready apartment with natural light and great neighborhood access.",
+  },
+  {
+    title: "Studio in Downtown",
+    price: "$120,000",
+    details: "1 bed · 1 bath · 600 sqft",
+    description: "Compact home with modern interiors for young professionals.",
+  },
+];
+
+const features = [
+  {
+    title: "Smart Search",
+    description: "Use AI filters to surface homes that match your exact budget and preferences.",
+  },
+  {
+    title: "Direct Contact",
+    description: "Message verified owners and agencies directly with zero broker dependence.",
+  },
+  {
+    title: "Secure Process",
+    description: "Move with confidence using verified profiles and transparent listing data.",
+  },
+];
+
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex min-h-screen flex-col bg-slate-50">
       <Header />
       <main className="flex-grow">
         <HeroSection />
 
-        {/* Featured Properties Section */}
-        <section className="py-16 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                Featured Properties
-              </h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Discover our handpicked selection of premium properties
-              </p>
+        <section className="section-padding">
+          <div className="container-shell">
+            <div className="mb-10 text-center">
+              <h2 className="text-3xl font-bold text-slate-900">Featured Properties</h2>
+              <p className="mt-2 text-slate-600">A curated collection of high-demand listings.</p>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Property Card 1 */}
-              <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="h-48 bg-gray-200"></div>
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    Luxury Villa in New Cairo
-                  </h3>
-                  <p className="text-2xl font-bold text-primary-600 mb-4">
-                    $350,000
-                  </p>
-                  <p className="text-gray-600 text-sm mb-3">
-                    A stunning modern villa in the heart of New Cairo with
-                    premium finishes.
-                  </p>
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
-                    <span>🛏️ 4 beds</span>
-                    <span>🛁 3 baths</span>
-                    <span>📏 3000 sqft</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Property Card 2 */}
-              <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="h-48 bg-gray-200"></div>
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    Spacious Apartment in Maadi
-                  </h3>
-                  <p className="text-2xl font-bold text-primary-600 mb-4">
-                    $1,500 /mo
-                  </p>
-                  <p className="text-gray-600 text-sm mb-3">
-                    Bright and airy apartment, perfect for families, close to
-                    amenities.
-                  </p>
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
-                    <span>🛏️ 3 beds</span>
-                    <span>🛁 2 baths</span>
-                    <span>📏 1800 sqft</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Property Card 3 */}
-              <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="h-48 bg-gray-200"></div>
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    Studio in Downtown
-                  </h3>
-                  <p className="text-2xl font-bold text-primary-600 mb-4">
-                    $120,000
-                  </p>
-                  <p className="text-gray-600 text-sm mb-3">
-                    A compact and modern studio, ideal for young professionals.
-                  </p>
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
-                    <span>🛏️ 1 bed</span>
-                    <span>🛁 1 bath</span>
-                    <span>📏 600 sqft</span>
-                  </div>
-                </div>
-              </div>
+            <div className="grid gap-6 md:grid-cols-3">
+              {featuredProperties.map((item) => (
+                <article key={item.title} className="surface-card p-6 transition hover:-translate-y-1 hover:shadow-lg">
+                  <div className="mb-4 h-40 rounded-xl bg-slate-100" />
+                  <h3 className="text-lg font-semibold text-slate-900">{item.title}</h3>
+                  <p className="mt-2 text-2xl font-bold text-indigo-600">{item.price}</p>
+                  <p className="mt-3 text-sm text-slate-600">{item.description}</p>
+                  <p className="mt-4 text-xs font-medium uppercase tracking-wide text-slate-500">{item.details}</p>
+                </article>
+              ))}
             </div>
-            <div className="text-center mt-12">
-              <button className="border-2 border-primary-600 text-primary-600 px-8 py-3 rounded-lg hover:bg-primary-50 transition-colors font-bold text-base">
-                View All Properties
-              </button>
+            <div className="mt-10 text-center">
+              <Link href="/Search" className="btn-secondary">
+                Explore all properties
+              </Link>
             </div>
           </div>
         </section>
 
-        {/* How It Works Section */}
-        <section className="py-16 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                How MAWA Works
-              </h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Simple steps to find or list your property, broker-free
-              </p>
+        <section className="section-padding bg-white">
+          <div className="container-shell">
+            <div className="mb-10 text-center">
+              <h2 className="text-3xl font-bold text-slate-900">How MAWA Works</h2>
+              <p className="mt-2 text-slate-600">Three simple steps to discover your next home.</p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-              <div className="p-6 bg-white rounded-lg shadow-sm border border-gray-200">
-                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">🔍</span>
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  Smart Search
-                </h3>
-                <p className="text-gray-600">
-                  Use our AI to find properties that truly match your criteria
-                </p>
-              </div>
-              <div className="p-6 bg-white rounded-lg shadow-sm border border-gray-200">
-                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">🤝</span>
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  Direct Contact
-                </h3>
-                <p className="text-gray-600">
-                  Communicate directly with verified owners, eliminating brokers
-                </p>
-              </div>
-              <div className="p-6 bg-white rounded-lg shadow-sm border border-gray-200">
-                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">✅</span>
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  Secure Transaction
-                </h3>
-                <p className="text-gray-600">
-                  Complete your transaction with confidence and security
-                </p>
-              </div>
+            <div className="grid gap-6 md:grid-cols-3">
+              {features.map((feature) => (
+                <article key={feature.title} className="surface-card p-6">
+                  <h3 className="text-lg font-semibold text-slate-900">{feature.title}</h3>
+                  <p className="mt-3 text-sm leading-6 text-slate-600">{feature.description}</p>
+                </article>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-16 bg-primary-600">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl font-bold text-white mb-4">
-              Ready to Find Your Dream Property?
-            </h2>
-            <p className="text-xl text-primary-100 mb-8">
-              Join thousands of satisfied users who found their perfect home
-              through MAWA
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/Search?type=sale"
-                className="bg-white text-indigo-600 px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors font-semibold text-center"
-              >
-                Browse Properties
-              </Link>
-              <Link
-                href="/Add-property"
-                className="bg-transparent border border-white text-white px-8 py-3 rounded-lg hover:bg-white hover:text-indigo-600 transition-colors font-semibold text-center"
-              >
-                List Your Property
-              </Link>
+        <section className="section-padding">
+          <div className="container-shell">
+            <div className="rounded-3xl bg-indigo-600 px-6 py-12 text-center text-white sm:px-10">
+              <h2 className="text-3xl font-bold">Ready to find your dream property?</h2>
+              <p className="mx-auto mt-3 max-w-2xl text-indigo-100">
+                Join thousands of seekers and owners building direct, trusted property transactions.
+              </p>
+              <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+                <Link href="/Search?type=sale" className="btn-secondary border-white/50 bg-white text-indigo-700 hover:bg-indigo-50">
+                  Browse Properties
+                </Link>
+                <Link href="/Add-property" className="rounded-xl border border-white/60 px-5 py-3 font-semibold text-white transition hover:bg-white/10">
+                  List Your Property
+                </Link>
+              </div>
             </div>
           </div>
         </section>

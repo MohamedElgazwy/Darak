@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import PropertyCard from "../components/PropertyCard";
 import SearchFilters from "../components/SearchFilters";
+import Pagination from "../components/Pagination";
 
 const mockProperties = [
   {
@@ -51,40 +52,30 @@ function SearchContent() {
   const typeParam = searchParams.get("type");
 
   const [properties, setProperties] = useState(mockProperties);
-  const [activeType, setActiveType] = useState(typeParam || "sale");
-
-  useEffect(() => {
-    if (typeParam) {
-      setActiveType(typeParam);
-    }
-  }, [typeParam]);
+  const activeType = typeParam || "sale";
+  const [page, setPage] = useState(1);
 
   const handleFilterChange = (filters) => {
     console.log("Filters applied:", filters);
+    setProperties(mockProperties);
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 font-sans">
+    <div className="flex min-h-screen flex-col bg-slate-50">
       <Header />
 
-      <main className="grow pt-24 pb-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-8 border-b border-slate-200 pb-6">
-            <div>
-              <h1 className="text-3xl font-extrabold text-slate-900">
-                {activeType === "sale"
-                  ? "Properties for Sale"
-                  : "Properties for Rent"}
-              </h1>
-              <p className="text-slate-500 mt-2">
-                Find your dream home from our verified listings.
-              </p>
-            </div>
-            <div className="flex items-center gap-3 mt-4 md:mt-0">
-              <span className="text-sm text-slate-500">
+      <main className="grow pb-16 pt-28">
+        <div className="container-shell">
+          <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-6">
+            <h1 className="text-3xl font-bold text-slate-900">
+              {activeType === "sale" ? "Properties for Sale" : "Properties for Rent"}
+            </h1>
+            <p className="mt-2 text-slate-600">Browse verified listings with transparent pricing and details.</p>
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+              <span className="rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-600">
                 {properties.length} results
               </span>
-              <select className="bg-white border border-slate-300 text-slate-700 text-sm rounded-lg px-3 py-2 outline-none focus:border-indigo-500">
+              <select className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 outline-none focus:border-indigo-500">
                 <option>Newest First</option>
                 <option>Price: Low to High</option>
                 <option>Price: High to Low</option>
@@ -92,45 +83,27 @@ function SearchContent() {
             </div>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-8">
-            <aside className="lg:w-1/4">
+          <div className="grid gap-6 lg:grid-cols-4">
+            <aside className="lg:col-span-1">
               <SearchFilters onFilterChange={handleFilterChange} />
             </aside>
 
-            <div className="lg:w-3/4">
+            <section className="lg:col-span-3">
               {properties.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid gap-6 md:grid-cols-2">
                   {properties.map((property) => (
                     <PropertyCard key={property.id} property={property} />
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-dashed border-slate-200">
-                  <div className="text-6xl mb-4">🔍</div>
-                  <h3 className="text-xl font-bold text-slate-900">
-                    No properties found
-                  </h3>
-                  <p className="text-slate-500">
-                    Try adjusting your filters or search criteria.
-                  </p>
+                <div className="surface-card py-16 text-center">
+                  <h3 className="text-xl font-semibold text-slate-900">No properties found</h3>
+                  <p className="mt-2 text-slate-600">Try adjusting filters and search criteria.</p>
                 </div>
               )}
 
-              <div className="mt-12 flex justify-center gap-2">
-                <button className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-50">
-                  Previous
-                </button>
-                <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-md">
-                  1
-                </button>
-                <button className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-50">
-                  2
-                </button>
-                <button className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-50">
-                  Next
-                </button>
-              </div>
-            </div>
+              <Pagination currentPage={page} totalPages={3} onPageChange={setPage} />
+            </section>
           </div>
         </div>
       </main>
@@ -142,7 +115,7 @@ function SearchContent() {
 
 export default function SearchPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-slate-600">Loading properties...</div>}>
       <SearchContent />
     </Suspense>
   );

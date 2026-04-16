@@ -1,161 +1,59 @@
 @import "tailwindcss";
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
 :root {
-  /* ألوان زاهية واحترافية - Professional Vibrant Palette */
-  --primary: 79 70 229; /* Indigo-600: لون أساسي قوي وجذاب */
-  --primary-dark: 67 56 202; /* Indigo-700 */
-  --secondary: 16 185 129; /* Emerald-500: لون ثانوي منعش */
-  --accent: 245 158 11; /* Amber-500: للتمييز */
-
-  --background: 248 250 252; /* Slate-50: خلفية مريحة للعين */
-  --foreground: 15 23 42; /* Slate-900: نص واضح جداً */
+  --background: 248 250 252;
+  --foreground: 15 23 42;
 }
 
-/* تنسيق شريط التمرير */
+body {
+  background: rgb(var(--background));
+  color: rgb(var(--foreground));
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+}
+
+* {
+  border-color: rgb(226 232 240);
+}
+
+::selection {
+  background: rgb(99 102 241 / 0.2);
+}
+
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
+
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: rgb(241 245 249);
 }
+
 ::-webkit-scrollbar-thumb {
-  background: rgb(var(--primary));
-  border-radius: 4px;
+  background: rgb(148 163 184);
+  border-radius: 999px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: rgb(var(--primary-dark));
+  background: rgb(100 116 139);
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .section-padding {
+    @apply py-16 md:py-20;
   }
 
-  /* تأثير الزجاج - Glassmorphism */
-  .glass {
-    @apply bg-white/80 backdrop-blur-md border border-white/20;
+  .container-shell {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
   }
 
-  /* ظلال ناعمة ملونة */
-  .shadow-soft {
-    box-shadow: 0 10px 40px -10px rgba(79, 70, 229, 0.1);
+  .surface-card {
+    @apply rounded-2xl border border-slate-200/80 bg-white shadow-sm;
   }
-}
 
-/* Card & Surface Utilities */
-.card {
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 1rem;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
-}
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-xl bg-indigo-600 px-5 py-3 font-semibold text-white transition hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2;
+  }
 
-.card:hover {
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
-  transition: box-shadow 200ms ease;
-}
-
-/* Text Utilities */
-.muted {
-  color: #64748b;
-}
-
-.text-muted {
-  color: #64748b;
-}
-
-/* Button Utilities */
-.btn-primary {
-  background: rgb(var(--primary));
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition: transform 200ms ease, box-shadow 200ms ease;
-  display: inline-block;
-  font-weight: 500;
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(79, 70, 229, 0.3);
-}
-
-.btn-secondary {
-  background: rgb(var(--secondary));
-  color: white;
-  padding: 0.45rem 0.9rem;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: opacity 200ms ease;
-}
-
-.btn-secondary:hover {
-  opacity: 0.9;
-}
-
-/* Background & Accent */
-.bg-accent {
-  background: rgb(var(--accent));
-  color: white;
-}
-
-.bg-primary {
-  background: rgb(var(--primary));
-  color: white;
-}
-
-.bg-secondary {
-  background: rgb(var(--secondary));
-  color: white;
-}
-
-/* Input Styles */
-.input {
-  background: white;
-  border: 1px solid #e2e8f0;
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  color: rgb(var(--foreground));
-  font-family: inherit;
-  transition: border-color 200ms ease;
-}
-
-.input:focus {
-  outline: none;
-  border-color: rgb(var(--primary));
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-}
-
-/* Link Colors */
-a {
-  color: rgb(var(--primary));
-  text-decoration: none;
-  transition: color 150ms ease;
-}
-
-a:hover {
-  text-decoration: underline;
-  opacity: 0.8;
-}
-
-/* App Container */
-.app-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem;
-}
-
-/* Responsive */
-@media (max-width: 640px) {
-  .app-container {
-    padding: 0.75rem;
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-5 py-3 font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2;
   }
 }

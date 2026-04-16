@@ -255,7 +255,7 @@ export default function PropertyDetail({ params }) {
                   </h4>
                   <ul className="text-sm text-yellow-700 space-y-1">
                     <li>• Meet in public places</li>
-                    <li>• Don't send money in advance</li>
+                    <li>• Don&apos;t send money in advance</li>
                     <li>• Verify ownership documents</li>
                     <li>• Report suspicious activity</li>
                   </ul>
