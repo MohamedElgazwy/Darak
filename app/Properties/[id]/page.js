@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Header from "../../components/Header";
-import Footer from "../../components/Footer";
 
 // Mock data - سيتم استبدالها ببيانات حقيقية من API
 const propertyData = {
@@ -49,7 +47,6 @@ export default function PropertyDetail({ params }) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
 
       <main className="flex-grow bg-white">
         {/* Property Images Gallery */}
@@ -304,8 +301,6 @@ export default function PropertyDetail({ params }) {
           </div>
         )}
       </main>
-
-      <Footer />
     </div>
   );
 }

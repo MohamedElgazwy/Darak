@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 
 // Mock data
 const userData = {
@@ -84,8 +82,6 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 font-sans">
-      <Header />
-
       <main className="flex-grow pt-24 pb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Dashboard Header */}
@@ -260,8 +256,6 @@ export default function Dashboard() {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }

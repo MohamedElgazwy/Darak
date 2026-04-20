@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import api from "../services/api";
 
 export default function AuthPage() {
@@ -81,7 +79,6 @@ export default function AuthPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-50">
-      <Header />
 
       <main className="grow pb-14 pt-28">
         <div className="container-shell max-w-md">
@@ -186,7 +183,6 @@ export default function AuthPage() {
         </div>
       </main>
 
-      <Footer />
     </div>
   );
 }

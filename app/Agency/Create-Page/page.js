@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Header from "../../components/Header";
-import Footer from "../../components/Footer";
 
 export default function AgencyPageBuilder() {
   const router = useRouter();
@@ -52,8 +50,6 @@ export default function AgencyPageBuilder() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 font-sans">
-      <Header />
-
       <main className="flex-grow py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -202,7 +198,6 @@ export default function AgencyPageBuilder() {
           )}
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

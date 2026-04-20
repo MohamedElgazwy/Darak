@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 
 export default function AddProperty() {
   const router = useRouter();
@@ -58,7 +56,6 @@ export default function AddProperty() {
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-50">
-      <Header />
 
       <main className="grow pb-14 pt-28">
         <div className="container-shell max-w-5xl">
@@ -206,7 +203,6 @@ export default function AddProperty() {
         </div>
       )}
 
-      <Footer />
     </div>
   );
 }

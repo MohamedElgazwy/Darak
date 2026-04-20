@@ -1,5 +1,4 @@
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+
 import Link from "next/link";
 
 const benefits = [
@@ -12,7 +11,6 @@ const benefits = [
 export default function AboutPage() {
   return (
     <div className="flex min-h-screen flex-col bg-slate-50">
-      <Header />
       <main className="grow pb-14 pt-28">
         <div className="container-shell max-w-4xl">
           <div className="surface-card p-8 sm:p-10">
@@ -46,7 +44,6 @@ export default function AboutPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

@@ -1,4 +1,7 @@
+import { Suspense } from "react";
 import "./globals.css";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 export const metadata = {
   title: "MAWA",
@@ -8,7 +11,19 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="antialiased">{children}</body>
+      <body className="antialiased flex min-h-screen flex-col">
+
+        {/* 🔥 حل المشكلة هنا */}
+        <Suspense fallback={null}>
+          <Header />
+        </Suspense>
+
+        <main className="flex-1">
+          {children}
+        </main>
+
+        <Footer />
+      </body>
     </html>
   );
 }

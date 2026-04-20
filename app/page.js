@@ -1,5 +1,4 @@
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+
 import HeroSection from "./components/HeroSection";
 import Link from "next/link";
 
@@ -42,7 +41,6 @@ const features = [
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col bg-slate-50">
-      <Header />
       <main className="flex-grow">
         <HeroSection />
 
@@ -107,7 +105,6 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <Footer />
     </div>
   );
 }

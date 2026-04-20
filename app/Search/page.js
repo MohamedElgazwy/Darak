@@ -2,8 +2,6 @@
 
 import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import PropertyCard from "../components/PropertyCard";
 import SearchFilters from "../components/SearchFilters";
 import Pagination from "../components/Pagination";
@@ -62,7 +60,6 @@ function SearchContent() {
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-50">
-      <Header />
 
       <main className="grow pb-16 pt-28">
         <div className="container-shell">
@@ -108,7 +105,6 @@ function SearchContent() {
         </div>
       </main>
 
-      <Footer />
     </div>
   );
 }

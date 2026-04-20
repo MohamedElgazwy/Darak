@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Header from "@/app/components/Header";
 
 export default function AgencyDashboard() {
   const [activeTab, setActiveTab] = useState("listings");
@@ -53,7 +52,6 @@ export default function AgencyDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Header />
 
       <div className="flex flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 gap-8">
         {/* Sidebar Navigation */}

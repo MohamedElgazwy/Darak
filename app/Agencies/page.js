@@ -1,11 +1,8 @@
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import Link from "next/link";
 
 export default function AgenciesPage() {
   return (
     <div className="flex min-h-screen flex-col bg-slate-50">
-      <Header />
       <main className="grow pb-14 pt-28">
         <div className="container-shell max-w-5xl">
           <div className="surface-card p-10 text-center">
@@ -20,7 +17,6 @@ export default function AgenciesPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }
