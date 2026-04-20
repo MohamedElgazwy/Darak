@@ -4,6 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import api from "../services/api";
 
+const DEFAULT_PLAN_BY_ROLE = {
+  Seeker: null,
+  Owner: null,
+  Agency: "basic",
+  Admin: null,
+};
+
 export default function AuthPage() {
   const router = useRouter();
   const [isLogin, setIsLogin] = useState(true);
@@ -25,36 +32,45 @@ export default function AuthPage() {
     setError("");
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  setIsLoading(true);
-  setError("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
-  try {
-    // 🔥 Mock response بدل API
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 900));
 
-    const fakeResponse = {
-      data: {
-        token: "fake-token-123",
-        user: {
-          name: "Mohamed",
-          email: formData.email,
-          role: "Seeker",
-        },
-      },
-    };
+      const selectedRole = isLogin ? "Seeker" : formData.role;
+      const fakeUser = {
+        id: `usr_${Date.now()}`,
+        name: formData.name || "Mohamed",
+        email: formData.email,
+        role: selectedRole,
+        subscriptionPlan: DEFAULT_PLAN_BY_ROLE[selectedRole],
+        agencyProfileId: selectedRole === "Agency" ? "agp_demo_01" : null,
+        activeListings: selectedRole === "Agency" ? 3 : 0,
+      };
 
-    localStorage.setItem("authToken", fakeResponse.data.token);
-    localStorage.setItem("user", JSON.stringify(fakeResponse.data.user));
+      localStorage.setItem("authToken", "fake-token-123");
+      localStorage.setItem("user", JSON.stringify(fakeUser));
 
-    router.push("/Dashboard");
-  } catch (err) {
-    setError("Something went wrong.");
-  } finally {
-    setIsLoading(false);
-  }
-};
+      if (selectedRole === "Agency") {
+        router.push("/Dashboard/Agency");
+        return;
+      }
+
+      if (selectedRole === "Admin") {
+        router.push("/Admin/Dashboard");
+        return;
+      }
+
+      router.push("/Dashboard");
+    } catch {
+      setError("Something went wrong.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
@@ -67,7 +83,7 @@ export default function AuthPage() {
         otp: formData.otp,
       });
 
-      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("authToken", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
       router.push("/Dashboard");
     } catch {
@@ -79,32 +95,15 @@ export default function AuthPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-50">
-
       <main className="grow pb-14 pt-28">
         <div className="container-shell max-w-md">
           <div className="surface-card p-8">
             {step === 1 && (
               <div className="mb-6 grid grid-cols-2 rounded-xl bg-slate-100 p-1">
-                <button
-                  onClick={() => {
-                    setIsLogin(true);
-                    setError("");
-                  }}
-                  className={`rounded-lg py-2 text-sm font-semibold transition ${
-                    isLogin ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"
-                  }`}
-                >
+                <button onClick={() => { setIsLogin(true); setError(""); }} className={`rounded-lg py-2 text-sm font-semibold transition ${isLogin ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"}`}>
                   Sign In
                 </button>
-                <button
-                  onClick={() => {
-                    setIsLogin(false);
-                    setError("");
-                  }}
-                  className={`rounded-lg py-2 text-sm font-semibold transition ${
-                    !isLogin ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"
-                  }`}
-                >
+                <button onClick={() => { setIsLogin(false); setError(""); }} className={`rounded-lg py-2 text-sm font-semibold transition ${!isLogin ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"}`}>
                   Sign Up
                 </button>
               </div>
@@ -126,6 +125,7 @@ export default function AuthPage() {
                         <option value="Seeker">Seeker (Buyer/Tenant)</option>
                         <option value="Owner">Property Owner</option>
                         <option value="Agency">Real Estate Agency</option>
+                        <option value="Admin">Admin</option>
                       </select>
                     </div>
                     <div>
@@ -146,7 +146,7 @@ export default function AuthPage() {
                 </div>
 
                 <button type="submit" disabled={isLoading} className="btn-primary w-full disabled:cursor-not-allowed disabled:opacity-60">
-                  {isLoading ? "Processing..." : isLogin ? "Sign In" : "Register & Verify"}
+                  {isLoading ? "Processing..." : isLogin ? "Sign In" : "Register & Continue"}
                 </button>
               </form>
             ) : (
@@ -158,16 +158,7 @@ export default function AuthPage() {
 
                 <div>
                   <label className="mb-1 block text-sm font-medium text-slate-700">Verification Code</label>
-                  <input
-                    type="text"
-                    name="otp"
-                    value={formData.otp}
-                    onChange={handleInputChange}
-                    required
-                    maxLength={6}
-                    className="w-full rounded-xl border border-slate-300 px-3 py-3 text-center text-2xl tracking-[0.3em] outline-none focus:border-indigo-500"
-                    placeholder="123456"
-                  />
+                  <input type="text" name="otp" value={formData.otp} onChange={handleInputChange} required maxLength={6} className="w-full rounded-xl border border-slate-300 px-3 py-3 text-center text-2xl tracking-[0.3em] outline-none focus:border-indigo-500" placeholder="123456" />
                 </div>
 
                 <button type="submit" disabled={isLoading} className="btn-primary w-full disabled:cursor-not-allowed disabled:opacity-60">
@@ -182,7 +173,6 @@ export default function AuthPage() {
           </div>
         </div>
       </main>
-
     </div>
   );
 }

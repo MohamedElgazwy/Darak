@@ -5,31 +5,56 @@ const api = axios.create({
   timeout: 10000,
 });
 
-// Request interceptor to add authorization token
 api.interceptors.request.use(
   (config) => {
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("authToken");
+      const user = JSON.parse(localStorage.getItem("user") || "null");
+
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
+
+      if (user?.role) {
+        config.headers["x-user-role"] = user.role;
+      }
+
+      if (user?.subscriptionPlan) {
+        config.headers["x-subscription-plan"] = user.subscriptionPlan;
+      }
     }
+
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Response interceptor to handle 401 errors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      if (typeof window !== "undefined") {
+    if (typeof window !== "undefined") {
+      const status = error.response?.status;
+      const code = error.response?.data?.code;
+
+      if (status === 401) {
         localStorage.removeItem("authToken");
         localStorage.removeItem("user");
         window.location.href = "/Auth";
       }
+
+      if (status === 403 && code === "PLAN_LIMIT_REACHED") {
+        window.dispatchEvent(
+          new CustomEvent("mawa:subscription-limit", {
+            detail: error.response?.data,
+          })
+        );
+      }
+
+      if (status === 402 && error.response?.data?.upgradeUrl) {
+        window.location.href = error.response.data.upgradeUrl;
+      }
     }
+
     return Promise.reject(error);
   }
 );

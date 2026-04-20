@@ -1,0 +1,36 @@
+export const API_EXAMPLES = {
+  authMe: {
+    id: "usr_101",
+    name: "Nile Estates",
+    email: "hello@nileestates.eg",
+    role: "Agency",
+    subscriptionPlan: "pro",
+    agencyProfileId: "agp_990",
+    activeListings: 7,
+  },
+  agencyProfile: {
+    id: "agp_990",
+    userId: "usr_101",
+    plan: "pro",
+    template: "executive",
+    listingsCount: 7,
+    verified: true,
+  },
+  property: {
+    id: "prop_22",
+    title: "Townhouse in New Cairo",
+    price: 7200000,
+    ownerType: "agency",
+    ownerId: "usr_101",
+    agencyId: "agp_990",
+    status: "published",
+  },
+  planLimitError: {
+    code: "PLAN_LIMIT_REACHED",
+    message: "Upgrade your plan to publish more listings.",
+    currentPlan: "basic",
+    activeListings: 5,
+    listingLimit: 5,
+    upgradeUrl: "/Dashboard/Agency?upgrade=true",
+  },
+};

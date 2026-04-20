@@ -17,6 +17,8 @@ const mockProperties = [
     area: 150,
     location: "New Cairo",
     verified: true,
+    ownerType: "agency",
+    agencyName: "Nile Estates",
     image: "/images/property1.jpg",
   },
   {
@@ -29,6 +31,8 @@ const mockProperties = [
     area: 450,
     location: "Sheikh Zayed",
     verified: true,
+    ownerType: "agency",
+    agencyName: "Capital Brokers",
     image: "/images/property4.jpg",
   },
   {
@@ -41,6 +45,7 @@ const mockProperties = [
     area: 75,
     location: "Maadi",
     verified: false,
+    ownerType: "owner",
     image: "/images/property3.jpg",
   },
 ];

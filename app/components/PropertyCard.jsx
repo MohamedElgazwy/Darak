@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import PropertyBadge from "../features/property/PropertyBadge";
 
 export default function PropertyCard({ property }) {
+  const ownerType = property.ownerType || "owner";
+
   return (
     <Link
       href={`/Properties/${property.id}`}
@@ -14,9 +17,12 @@ export default function PropertyCard({ property }) {
           alt={property.title}
           className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
         />
-        <span className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-semibold text-slate-700">
-          {property.type === "sale" ? "For Sale" : "For Rent"}
-        </span>
+        <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+          <span className="rounded-full bg-white/95 px-3 py-1 text-xs font-semibold text-slate-700">
+            {property.type === "sale" ? "For Sale" : "For Rent"}
+          </span>
+          <PropertyBadge ownerType={ownerType} />
+        </div>
       </div>
 
       <div className="p-5">
@@ -24,6 +30,12 @@ export default function PropertyCard({ property }) {
           {property.title}
         </h3>
         <p className="mt-2 text-sm text-slate-600">{property.location}</p>
+
+        {property.agencyName && ownerType === "agency" && (
+          <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-indigo-700">
+            {property.agencyName}
+          </p>
+        )}
 
         <div className="mt-4 grid grid-cols-3 gap-2 rounded-xl bg-slate-50 p-3 text-xs font-medium text-slate-600">
           <span>{property.bedrooms} Beds</span>
@@ -38,11 +50,7 @@ export default function PropertyCard({ property }) {
               <span className="ml-1 text-sm font-medium text-slate-500">/mo</span>
             )}
           </p>
-          {property.verified && (
-            <span className="rounded-full bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700">
-              Verified
-            </span>
-          )}
+          <PropertyBadge ownerType={ownerType} variant="verification" />
         </div>
       </div>
     </Link>
