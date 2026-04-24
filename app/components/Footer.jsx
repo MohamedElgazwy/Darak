@@ -6,7 +6,6 @@ export default function Footer() {
     <footer className="border-t border-slate-200 bg-white text-right">
       <div className="container-shell py-14">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
-
           <div>
             <div className="mb-4 flex items-center gap-3 justify-start">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-sm font-bold text-white">
