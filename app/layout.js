@@ -7,6 +7,7 @@ export const metadata = {
   title: "MAWA",
   description: "Broker-free real estate platform",
 };
+// starting dev branch
 
 export default function RootLayout({ children }) {
   const local = 'ar';
