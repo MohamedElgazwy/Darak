@@ -90,7 +90,7 @@ export default function Header() {
           {/* 🔷 Actions */}
           <div className="hidden md:flex items-center gap-3">
             <Link
-              href="/Auth"
+              href="/Auth/login"
               className="btn-secondary px-4 py-2.5 text-sm hover:scale-[1.03] transition"
             >
               تسجيل الدخول
