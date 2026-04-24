@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import "./globals.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-
+// starting dev branch
 export const metadata = {
   title: "MAWA",
   description: "Broker-free real estate platform",
