@@ -46,8 +46,8 @@ export default function Header() {
     <header
       className={`fixed top-0 z-50 w-full transition-all duration-300 ${
         isScrolled || isMenuOpen
-          ? "bg-white/90 backdrop-blur-xl border-b border-slate-200 shadow-sm"
-          : "bg-white/70 backdrop-blur-md"
+          ? "bg-[rgb(var(--card-bg))]/90 backdrop-blur-xl border-b border-slate-200 shadow-sm"
+          : "bg-[rgb(var(--card-bg))]/70 backdrop-blur-md"
       }`}
     >
       <div className="container-shell">
@@ -123,7 +123,7 @@ export default function Header() {
           isMenuOpen ? "max-h-[400px] border-t border-slate-200" : "max-h-0"
         }`}
       >
-        <div className="container-shell py-4 space-y-2 bg-white text-right">
+        <div className="container-shell py-4 space-y-2 bg-[rgb(var(--card-bg))] text-right">
           {navLinks.map((link) => (
             <Link
               key={link.name}

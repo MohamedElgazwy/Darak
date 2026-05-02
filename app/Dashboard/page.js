@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTheme } from "../components/ThemeProvider";
 
 const userData = {
   name: "أحمد محمد",
@@ -34,6 +35,7 @@ const statsData = {
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("overview");
+  const { theme, setTheme } = useTheme();
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-right">
@@ -152,7 +154,29 @@ export default function Dashboard() {
               )}
 
               {activeTab === "profile" && (
-                <p>إعدادات الحساب</p>
+                <div>
+                  <h2 className="text-xl font-bold mb-4">إعدادات الحساب</h2>
+                  <p className="text-slate-500 mb-4">اختر التصميم الذي يناسبك وسيتم تطبيقه على كل الصفحات.</p>
+                  <div className="grid md:grid-cols-3 gap-3">
+                    {[
+                      { id: "standard", label: "قياسي" },
+                      { id: "ocean", label: "أزرق" },
+                      { id: "sunset", label: "دافئ" },
+                    ].map((option) => (
+                      <button
+                        key={option.id}
+                        onClick={() => setTheme(option.id)}
+                        className={`border rounded-xl p-4 text-right transition ${
+                          theme === option.id
+                            ? "border-indigo-600 bg-indigo-50 font-bold"
+                            : "border-slate-200 hover:border-slate-400"
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               )}
 
             </section>
