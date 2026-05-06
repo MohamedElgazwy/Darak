@@ -41,6 +41,7 @@ export default function AgencyPageBuilder() {
 
     setLoading(true);
     setTimeout(() => {
+      localStorage.setItem("agency-template", selectedTemplate.id);
       setLoading(false);
       if (isRegistrationFlow) {
         router.push(`/Auth/login?newAgency=1&template=${selectedTemplate.id}`);
