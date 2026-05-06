@@ -1,9 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 export default function AgencyDashboard() {
+  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState("listings");
+  const templateId = useMemo(() => {
+    const fromUrl = searchParams.get("template");
+    if (fromUrl) return fromUrl;
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("agency-template") || "modern";
+    }
+    return "modern";
+  }, [searchParams]);
+
+  const templateMeta = useMemo(() => {
+    const templateMap = {
+      modern: { label: "تصميم عصري", className: "from-indigo-50 to-white border-indigo-200" },
+      luxury: { label: "تصميم فاخر", className: "from-amber-50 to-white border-amber-200" },
+      corporate: { label: "تصميم احترافي", className: "from-slate-100 to-white border-slate-300" },
+    };
+    return templateMap[templateId] || templateMap.modern;
+  }, [templateId]);
 
   const stats = [
     { title: "إجمالي العقارات", value: "24", icon: "🏠", color: "bg-blue-100 text-blue-600" },
@@ -60,6 +79,10 @@ export default function AgencyDashboard() {
 
         {/* Main */}
         <main className="flex-1">
+          <div className={`mb-6 rounded-2xl border bg-gradient-to-r p-4 ${templateMeta.className}`}>
+            <p className="text-sm text-gray-600">التصميم الحالي للوكالة</p>
+            <p className="font-bold">{templateMeta.label}</p>
+          </div>
 
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
