@@ -2,31 +2,37 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 
 export default function AgencyPageBuilder() {
   const router = useRouter();
   const searchParams = useSearchParams();
+
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+
   const isRegistrationFlow = searchParams.get("from") === "registration";
 
   const templates = [
     {
       id: "modern",
       name: "تصميم عصري",
+      preview: "/images/classic-design.png",
       price: 1000,
       features: ["تصميم بسيط", "معرض صور كبير", "قسم الفريق"],
     },
     {
       id: "luxury",
       name: "تصميم فاخر",
+      preview: "/images/bright-design.png",
       price: 2500,
       features: ["لمسات ذهبية", "فيديو افتتاحي", "شارة مميزة"],
     },
     {
       id: "corporate",
       name: "تصميم احترافي",
+      preview: "/images/dark-design.png",
       price: 1500,
       features: ["عرض بيانات متقدم", "خريطة تفاعلية", "قائمة الوسطاء"],
     },
@@ -40,8 +46,10 @@ export default function AgencyPageBuilder() {
     if (!selectedTemplate) return;
 
     setLoading(true);
+
     setTimeout(() => {
       setLoading(false);
+
       if (isRegistrationFlow) {
         router.push(`/Auth/login?newAgency=1&template=${selectedTemplate.id}`);
         return;
@@ -53,18 +61,16 @@ export default function AgencyPageBuilder() {
 
   return (
     <div className="min-h-screen mt-1 flex flex-col bg-gray-50 text-right">
-
       <main className="flex-grow py-12">
         <div className="max-w-7xl mx-auto px-4">
 
           {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-3xl font-bold">
-              إنشاء صفحة وكالتك
-            </h1>
+          <div className="text-center my-12">
+            <h1 className="text-3xl font-bold">إنشاء صفحة وكالتك</h1>
             <p className="mt-2 text-gray-600">
               اختر التصميم المناسب الذي يعكس هوية شركتك
             </p>
+
             {isRegistrationFlow && (
               <p className="mt-4 inline-block bg-indigo-50 text-indigo-700 px-4 py-2 rounded-xl text-sm">
                 خطوة أخيرة بعد التسجيل: اختر أحد 3 تصاميم لتفعيل صفحة الشركة.
@@ -75,7 +81,6 @@ export default function AgencyPageBuilder() {
           {/* Step 1 */}
           {step === 1 && (
             <div className="grid md:grid-cols-3 gap-8">
-
               {templates.map((template) => (
                 <div
                   key={template.id}
@@ -86,9 +91,14 @@ export default function AgencyPageBuilder() {
                       : "border-transparent"
                   }`}
                 >
-                  {/* Preview */}
-                  <div className="h-56 bg-gray-200 flex items-center justify-center">
-                    معاينة التصميم
+                  {/* ✅ FIXED IMAGE */}
+                  <div className="relative w-full h-56">
+                    <Image
+                      src={template.preview}
+                      alt={template.name}
+                      fill
+                      className="object-cover rounded-t-2xl"
+                    />
                   </div>
 
                   <div className="p-6">
@@ -96,9 +106,6 @@ export default function AgencyPageBuilder() {
                       <h3 className="text-lg font-bold">
                         {template.name}
                       </h3>
-                      <span className="text-green-600 font-bold">
-                        {template.price} جنيه
-                      </span>
                     </div>
 
                     <button
@@ -113,7 +120,7 @@ export default function AgencyPageBuilder() {
                       اختيار هذا التصميم
                     </button>
 
-                    <ul className="text-sm text-gray-500 space-y-2">
+                    <ul className="text-sm text-gray-500 space-y-2 mt-4">
                       {template.features.map((f, i) => (
                         <li key={i}>✔ {f}</li>
                       ))}
@@ -121,21 +128,17 @@ export default function AgencyPageBuilder() {
                   </div>
                 </div>
               ))}
-
             </div>
           )}
 
           {/* Step 2 */}
           {step === 2 && selectedTemplate && (
             <div className="max-w-lg mx-auto bg-white p-8 rounded-2xl shadow-xl">
-
-              <h2 className="text-2xl font-bold mb-6">
-                تأكيد الدفع
-              </h2>
+              <h2 className="text-2xl font-bold mb-6">تأكيد الدفع</h2>
 
               <div className="p-4 bg-gray-50 rounded-xl mb-6">
                 <h3 className="font-bold">{selectedTemplate.name}</h3>
-                <p className="text-primary-600 font-bold">
+                <p className="text-indigo-600 font-bold">
                   {selectedTemplate.price} جنيه
                 </p>
               </div>
@@ -165,7 +168,7 @@ export default function AgencyPageBuilder() {
                 disabled={!selectedTemplate}
                 className={`px-10 py-4 rounded-xl font-bold ${
                   selectedTemplate
-                    ? "bg-primary-600 text-white"
+                    ? "bg-indigo-600 text-white"
                     : "bg-gray-200 text-gray-400"
                 }`}
               >
