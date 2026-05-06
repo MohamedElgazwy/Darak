@@ -5,7 +5,7 @@ import Footer from "./components/Footer";
 import { ThemeProvider } from "./components/ThemeProvider";
 // starting dev branch
 export const metadata = {
-  title: "MAWA",
+  title: "Darak",
   description: "Broker-free real estate platform",
 };
 // starting dev branch
