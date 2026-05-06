@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 
-export default function AgencyPageBuilder() {
+function AgencyPageBuilderContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -64,8 +64,6 @@ export default function AgencyPageBuilder() {
     <div className="min-h-screen mt-1 flex flex-col bg-gray-50 text-right">
       <main className="flex-grow py-12">
         <div className="max-w-7xl mx-auto px-4">
-
-          {/* Header */}
           <div className="text-center my-12">
             <h1 className="text-3xl font-bold">إنشاء صفحة وكالتك</h1>
             <p className="mt-2 text-gray-600">
@@ -79,7 +77,6 @@ export default function AgencyPageBuilder() {
             )}
           </div>
 
-          {/* Step 1 */}
           {step === 1 && (
             <div className="grid md:grid-cols-3 gap-8">
               {templates.map((template) => (
@@ -92,7 +89,6 @@ export default function AgencyPageBuilder() {
                       : "border-transparent"
                   }`}
                 >
-                  {/* ✅ FIXED IMAGE */}
                   <div className="relative w-full h-56">
                     <Image
                       src={template.preview}
@@ -104,9 +100,7 @@ export default function AgencyPageBuilder() {
 
                   <div className="p-6">
                     <div className="flex justify-between mb-4">
-                      <h3 className="text-lg font-bold">
-                        {template.name}
-                      </h3>
+                      <h3 className="text-lg font-bold">{template.name}</h3>
                     </div>
 
                     <button
@@ -132,7 +126,6 @@ export default function AgencyPageBuilder() {
             </div>
           )}
 
-          {/* Step 2 */}
           {step === 2 && selectedTemplate && (
             <div className="max-w-lg mx-auto bg-white p-8 rounded-2xl shadow-xl">
               <h2 className="text-2xl font-bold mb-6">تأكيد الدفع</h2>
@@ -161,7 +154,6 @@ export default function AgencyPageBuilder() {
             </div>
           )}
 
-          {/* Continue Button */}
           {step === 1 && (
             <div className="mt-12 flex justify-start">
               <button
@@ -177,9 +169,16 @@ export default function AgencyPageBuilder() {
               </button>
             </div>
           )}
-
         </div>
       </main>
     </div>
+  );
+}
+
+export default function AgencyPageBuilder() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50" />}>
+      <AgencyPageBuilderContent />
+    </Suspense>
   );
 }

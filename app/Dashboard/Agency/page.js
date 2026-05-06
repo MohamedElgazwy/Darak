@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
-export default function AgencyDashboard() {
+function AgencyDashboardContent() {
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState("listings");
   const templateId = useMemo(() => {
@@ -168,5 +168,14 @@ export default function AgencyDashboard() {
         </main>
       </div>
     </div>
+  );
+}
+
+
+export default function AgencyDashboard() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50" />}>
+      <AgencyDashboardContent />
+    </Suspense>
   );
 }
