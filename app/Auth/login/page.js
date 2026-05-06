@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -27,6 +28,17 @@ export default function LoginPage() {
       await new Promise((res) => setTimeout(res, 1000));
 
       localStorage.setItem("token", "fake-token");
+      const agencyTemplate = searchParams.get("template");
+      const isNewAgency = searchParams.get("newAgency") === "1";
+
+      if (agencyTemplate) {
+        localStorage.setItem("agency-template", agencyTemplate);
+      }
+
+      if (isNewAgency) {
+        router.push(`/Dashboard/Agency?template=${agencyTemplate || "modern"}`);
+        return;
+      }
 
       router.push("/Dashboard");
     } catch {

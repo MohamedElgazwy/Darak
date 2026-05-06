@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import "./globals.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import { ThemeProvider } from "./components/ThemeProvider";
 // starting dev branch
 export const metadata = {
   title: "MAWA",
@@ -14,16 +15,17 @@ export default function RootLayout({ children }) {
   return (
     <html lang={local} dir={local === 'ar' ? 'rtl' : 'ltr'}>
       <body className="antialiased flex min-h-screen flex-col">
+        <ThemeProvider>
+          <Suspense fallback={null}>
+            <Header />
+          </Suspense>
 
-        <Suspense fallback={null}>
-          <Header />
-        </Suspense>
+          <main className="flex-1">
+            {children}
+          </main>
 
-        <main className="flex-1">
-          {children}
-        </main>
-
-        <Footer />
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );

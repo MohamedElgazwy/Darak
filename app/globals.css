@@ -3,6 +3,22 @@
 :root {
   --background: 248 250 252;
   --foreground: 15 23 42;
+  --card-bg: 255 255 255;
+  --card-border: 226 232 240;
+}
+
+:root[data-theme="ocean"] {
+  --background: 239 246 255;
+  --foreground: 15 23 42;
+  --card-bg: 248 250 252;
+  --card-border: 186 230 253;
+}
+
+:root[data-theme="sunset"] {
+  --background: 255 247 237;
+  --foreground: 67 20 7;
+  --card-bg: 255 255 255;
+  --card-border: 254 215 170;
 }
 
 body {
@@ -12,7 +28,7 @@ body {
 }
 
 * {
-  border-color: rgb(226 232 240);
+  border-color: rgb(var(--card-border));
 }
 
 ::selection {
@@ -46,7 +62,8 @@ body {
   }
 
   .surface-card {
-    @apply rounded-2xl border border-slate-200/80 bg-white shadow-sm;
+    background-color: rgb(var(--card-bg));
+    @apply rounded-2xl border shadow-sm;
   }
 
   .btn-primary {
@@ -54,7 +71,7 @@ body {
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-5 py-3 font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2;
+    background-color: rgb(var(--card-bg));
+    @apply inline-flex items-center justify-center rounded-xl border px-5 py-3 font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2;
   }
 }
-

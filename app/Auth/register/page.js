@@ -27,6 +27,11 @@ export default function RegisterPage() {
     try {
       await new Promise((res) => setTimeout(res, 1000));
 
+      if (formData.role === "Agency") {
+        router.push("/Agency/Create-Page?from=registration");
+        return;
+      }
+
       router.push("/Auth/login");
     } finally {
       setLoading(false);
