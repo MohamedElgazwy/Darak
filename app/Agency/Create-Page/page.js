@@ -48,6 +48,7 @@ export default function AgencyPageBuilder() {
     setLoading(true);
 
     setTimeout(() => {
+      localStorage.setItem("agency-template", selectedTemplate.id);
       setLoading(false);
 
       if (isRegistrationFlow) {
