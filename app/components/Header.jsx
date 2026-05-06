@@ -44,16 +44,61 @@ export default function Header() {
 
   return (
     <header
+      dir="rtl"
       className={`fixed top-0 z-50 w-full transition-all duration-300 ${
         isScrolled || isMenuOpen
-          ? "bg-white/90 backdrop-blur-xl border-b border-slate-200 shadow-sm"
-          : "bg-white/70 backdrop-blur-md"
+          ? "bg-[rgb(var(--card-bg))]/90 backdrop-blur-xl border-b border-slate-200 shadow-sm"
+          : "bg-[rgb(var(--card-bg))]/70 backdrop-blur-md"
       }`}
     >
       <div className="container-shell">
-        <div className="flex h-20 items-center justify-between">
+        <div className="flex h-20 items-center justify-between flex-row-reverse">
 
-          {/* 🔷 Logo */}
+          {/* 🔷 Left Side (Links + Actions) */}
+          <div className="hidden md:flex items-center gap-6">
+
+            {/* 🔷 Nav Links */}
+            <nav className="flex items-center gap-5">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  href={buildHref(link)}
+                  className={`relative text-sm font-medium transition ${
+                    isActive(link)
+                      ? "text-indigo-600"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  {link.name}
+
+                  <span
+                    className={`absolute left-0 -bottom-1 h-[2px] w-full bg-indigo-600 transition-all duration-300 ${
+                      isActive(link) ? "scale-x-100" : "scale-x-0"
+                    } origin-left`}
+                  />
+                </Link>
+              ))}
+            </nav>
+
+            {/* 🔷 Actions (Small Rounded Buttons) */}
+            <div className="flex items-center gap-2">
+              <Link
+                href="/Auth/login"
+                className="px-3 py-3 text-xs rounded-full border border-slate-300 text-slate-700 hover:bg-slate-100 transition"
+              >
+               تسجيل دخول
+              </Link>
+
+              <Link
+                href="/Add-property"
+                className="px-3 py-3 text-xs rounded-full bg-indigo-600 text-white hover:bg-indigo-700 transition shadow-sm"
+              >
+                أضف
+              </Link>
+            </div>
+          </div>
+
+          {/* 🔷 Logo (Right Side) */}
           <Link href="/" className="flex items-center gap-3 group">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-white font-bold shadow-lg shadow-indigo-600/30 group-hover:scale-105 transition">
               🏠
@@ -63,55 +108,27 @@ export default function Header() {
             </span>
           </Link>
 
-          {/* 🔷 Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-6">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={buildHref(link)}
-                className={`relative text-sm font-medium transition ${
-                  isActive(link)
-                    ? "text-indigo-600"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                {link.name}
-
-                {/* underline */}
-                <span
-                  className={`absolute right-0 -bottom-1 h-[2px] w-full bg-indigo-600 transition-all duration-300 ${
-                    isActive(link) ? "scale-x-100" : "scale-x-0"
-                  } origin-right`}
-                />
-              </Link>
-            ))}
-          </nav>
-
-          {/* 🔷 Actions */}
-          <div className="hidden md:flex items-center gap-3">
-            <Link
-              href="/Auth/login"
-              className="btn-secondary px-4 py-2.5 text-sm hover:scale-[1.03] transition"
-            >
-              تسجيل الدخول
-            </Link>
-            <Link
-              href="/Add-property"
-              className="btn-primary px-4 py-2.5 text-sm shadow-md hover:shadow-lg hover:scale-[1.03] transition"
-            >
-              أضف عقارك
-            </Link>
-          </div>
-
           {/* 🔷 Mobile Toggle */}
           <button
             onClick={() => setIsMenuOpen((prev) => !prev)}
             className="md:hidden p-2 rounded-lg text-slate-700"
           >
             <div className="space-y-1">
-              <span className={`block h-[2px] w-6 bg-black transition ${isMenuOpen ? "rotate-45 translate-y-[6px]" : ""}`} />
-              <span className={`block h-[2px] w-6 bg-black transition ${isMenuOpen ? "opacity-0" : ""}`} />
-              <span className={`block h-[2px] w-6 bg-black transition ${isMenuOpen ? "-rotate-45 -translate-y-[6px]" : ""}`} />
+              <span
+                className={`block h-[2px] w-6 bg-black transition ${
+                  isMenuOpen ? "rotate-45 translate-y-[6px]" : ""
+                }`}
+              />
+              <span
+                className={`block h-[2px] w-6 bg-black transition ${
+                  isMenuOpen ? "opacity-0" : ""
+                }`}
+              />
+              <span
+                className={`block h-[2px] w-6 bg-black transition ${
+                  isMenuOpen ? "-rotate-45 -translate-y-[6px]" : ""
+                }`}
+              />
             </div>
           </button>
         </div>
@@ -123,7 +140,7 @@ export default function Header() {
           isMenuOpen ? "max-h-[400px] border-t border-slate-200" : "max-h-0"
         }`}
       >
-        <div className="container-shell py-4 space-y-2 bg-white text-right">
+        <div className="container-shell py-4 space-y-2 bg-[rgb(var(--card-bg))] text-right">
           {navLinks.map((link) => (
             <Link
               key={link.name}
@@ -140,11 +157,11 @@ export default function Header() {
           ))}
 
           <div className="grid grid-cols-2 gap-2 pt-3">
-            <Link href="/Auth/login" className="btn-secondary text-center py-2">
-              تسجيل الدخول
+            <Link href="/Auth/login" className="text-center py-2 rounded-full border border-slate-300">
+              دخول
             </Link>
-            <Link href="/Add-property" className="btn-primary text-center py-2">
-              إضافة
+            <Link href="/Add-property" className="text-center py-2 rounded-full bg-indigo-600 text-white">
+              أضف
             </Link>
           </div>
         </div>
