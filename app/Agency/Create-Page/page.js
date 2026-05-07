@@ -20,21 +20,18 @@ function AgencyPageBuilderContent() {
       id: "modern",
       name: "تصميم عصري",
       preview: "/images/classic-design.png",
-      price: 1000,
       features: ["تصميم بسيط", "معرض صور كبير", "قسم الفريق"],
     },
     {
       id: "luxury",
       name: "تصميم فاخر",
       preview: "/images/bright-design.png",
-      price: 2500,
       features: ["لمسات ذهبية", "فيديو افتتاحي", "شارة مميزة"],
     },
     {
       id: "corporate",
       name: "تصميم احترافي",
       preview: "/images/dark-design.png",
-      price: 1500,
       features: ["عرض بيانات متقدم", "خريطة تفاعلية", "قائمة الوسطاء"],
     },
   ];
@@ -200,9 +197,7 @@ function AgencyPageBuilderContent() {
 
               <div className="p-4 bg-gray-50 rounded-xl mb-6">
                 <h3 className="font-bold">{selectedTemplate.name}</h3>
-                <p className="text-indigo-600 font-bold">
-                  {selectedTemplate.price} جنيه
-                </p>
+                
               </div>
 
               <div className="p-4 bg-indigo-50 rounded-xl mb-6">
