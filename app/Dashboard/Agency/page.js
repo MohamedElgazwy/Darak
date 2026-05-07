@@ -24,6 +24,24 @@ function AgencyDashboardContent() {
     return templateMap[templateId] || templateMap.modern;
   }, [templateId]);
 
+  const subscriptionId = useMemo(() => {
+    const fromUrl = searchParams.get("subscription");
+    if (fromUrl) return fromUrl;
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("agency-subscription") || "basic";
+    }
+    return "basic";
+  }, [searchParams]);
+
+  const subscriptionMeta = useMemo(() => {
+    const subscriptionMap = {
+      basic: { label: "Basic", className: "bg-slate-100 text-slate-700" },
+      pro: { label: "Pro", className: "bg-indigo-100 text-indigo-700" },
+      premium: { label: "Premium", className: "bg-amber-100 text-amber-700" },
+    };
+    return subscriptionMap[subscriptionId] || subscriptionMap.basic;
+  }, [subscriptionId]);
+
   const stats = [
     { title: "إجمالي العقارات", value: "24", icon: "🏠", color: "bg-blue-100 text-blue-600" },
     { title: "عدد المشاهدات", value: "1.2k", icon: "👁️", color: "bg-purple-100 text-purple-600" },
@@ -50,7 +68,9 @@ function AgencyDashboardContent() {
             </div>
             <div>
               <h2 className="font-bold">وكالة برو</h2>
-              <p className="text-xs text-gray-500">الخطة المميزة</p>
+              <p className={`text-xs inline-block mt-1 px-2 py-1 rounded-full ${subscriptionMeta.className}`}>
+                {subscriptionMeta.label} Plan
+              </p>
             </div>
           </div>
 
@@ -82,6 +102,11 @@ function AgencyDashboardContent() {
           <div className={`mb-6 rounded-2xl border bg-gradient-to-r p-4 ${templateMeta.className}`}>
             <p className="text-sm text-gray-600">التصميم الحالي للوكالة</p>
             <p className="font-bold">{templateMeta.label}</p>
+          </div>
+
+          <div className="mb-6 rounded-2xl border bg-white p-4">
+            <p className="text-sm text-gray-600">نوع الاشتراك الحالي</p>
+            <p className="font-bold">{subscriptionMeta.label}</p>
           </div>
 
           {/* Stats */}

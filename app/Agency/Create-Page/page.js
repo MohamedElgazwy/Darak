@@ -9,6 +9,7 @@ function AgencyPageBuilderContent() {
   const searchParams = useSearchParams();
 
   const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [selectedSubscription, setSelectedSubscription] = useState(null);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
 
@@ -38,25 +39,59 @@ function AgencyPageBuilderContent() {
     },
   ];
 
+  const subscriptionPlans = [
+    {
+      id: "basic",
+      name: "Basic",
+      price: "500 EGP / month",
+      features: ["5 Active Announcements", "Properties List", "Contact Us"],
+    },
+    {
+      id: "pro",
+      name: "Pro",
+      price: "750 EGP / month",
+      features: [
+        "10 Active Announcements",
+        "Properties List",
+        "Contact Us",
+        "About Us",
+        "Our Projects",
+      ],
+    },
+    {
+      id: "premium",
+      name: "Premium",
+      price: "1500 EGP / month",
+      features: [
+        "Unlimited Announcements",
+        "Properties List",
+        "Contact Us",
+        "About Us",
+        "Our Projects",
+        "Client Reviews",
+        "FAQs",
+      ],
+    },
+  ];
+
   const handleTemplateSelect = (template) => {
     setSelectedTemplate(template);
   };
 
   const handleCreatePage = async () => {
-    if (!selectedTemplate) return;
+    if (!selectedTemplate || !selectedSubscription) return;
 
     setLoading(true);
 
     setTimeout(() => {
       localStorage.setItem("agency-template", selectedTemplate.id);
+      localStorage.setItem("agency-subscription", selectedSubscription.id);
       setLoading(false);
-
-      if (isRegistrationFlow) {
-        router.push(`/Auth/login?newAgency=1&template=${selectedTemplate.id}`);
-        return;
-      }
-
-      router.push(`/Dashboard/Agency?template=${selectedTemplate.id}`);
+      router.push(
+        `/Dashboard/Agency?template=${selectedTemplate.id}&subscription=${selectedSubscription.id}${
+          isRegistrationFlow ? "&newAgency=1" : ""
+        }`
+      );
     }, 2000);
   };
 
@@ -127,6 +162,39 @@ function AgencyPageBuilderContent() {
           )}
 
           {step === 2 && selectedTemplate && (
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold">Choose Your Subscription</h2>
+                <p className="mt-2 text-gray-600">
+                  Transparent pricing for every real estate journey.
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-6">
+                {subscriptionPlans.map((plan) => (
+                  <div
+                    key={plan.id}
+                    onClick={() => setSelectedSubscription(plan)}
+                    className={`rounded-2xl border-2 bg-white p-6 cursor-pointer transition ${
+                      selectedSubscription?.id === plan.id
+                        ? "border-indigo-500 shadow-xl"
+                        : "border-gray-200 hover:border-indigo-300"
+                    }`}
+                  >
+                    <h3 className="text-3xl font-bold text-center mb-2">{plan.name}</h3>
+                    <p className="text-center text-indigo-700 font-bold text-2xl mb-6">{plan.price}</p>
+                    <ul className="space-y-2 text-sm text-gray-700">
+                      {plan.features.map((feature) => (
+                        <li key={feature}>✔ {feature}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {step === 3 && selectedTemplate && selectedSubscription && (
             <div className="max-w-lg mx-auto bg-white p-8 rounded-2xl shadow-xl">
               <h2 className="text-2xl font-bold mb-6">تأكيد الدفع</h2>
 
@@ -135,6 +203,11 @@ function AgencyPageBuilderContent() {
                 <p className="text-indigo-600 font-bold">
                   {selectedTemplate.price} جنيه
                 </p>
+              </div>
+
+              <div className="p-4 bg-indigo-50 rounded-xl mb-6">
+                <h3 className="font-bold">{selectedSubscription.name}</h3>
+                <p className="text-indigo-700 font-bold">{selectedSubscription.price}</p>
               </div>
 
               <button
@@ -146,10 +219,10 @@ function AgencyPageBuilderContent() {
               </button>
 
               <button
-                onClick={() => setStep(1)}
+                onClick={() => setStep(2)}
                 className="w-full mt-3 text-gray-500"
               >
-                اختيار تصميم آخر
+                اختيار باقة أخرى
               </button>
             </div>
           )}
@@ -161,6 +234,22 @@ function AgencyPageBuilderContent() {
                 disabled={!selectedTemplate}
                 className={`px-10 py-4 rounded-xl font-bold ${
                   selectedTemplate
+                    ? "bg-indigo-600 text-white"
+                    : "bg-gray-200 text-gray-400"
+                }`}
+              >
+                التالي
+              </button>
+            </div>
+          )}
+
+          {step === 2 && (
+            <div className="mt-12 flex justify-start">
+              <button
+                onClick={() => selectedSubscription && setStep(3)}
+                disabled={!selectedSubscription}
+                className={`px-10 py-4 rounded-xl font-bold ${
+                  selectedSubscription
                     ? "bg-indigo-600 text-white"
                     : "bg-gray-200 text-gray-400"
                 }`}
