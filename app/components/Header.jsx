@@ -110,6 +110,9 @@ export default function Header() {
 
           {/* 🔷 Mobile Toggle */}
           <button
+            aria-label="Toggle Menu"
+            aria-expanded={isMenuOpen}
+
             onClick={() => setIsMenuOpen((prev) => !prev)}
             className="md:hidden p-2 rounded-lg text-slate-700"
           >

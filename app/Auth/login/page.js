@@ -3,7 +3,7 @@
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-function LoginPageContent() {
+function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -16,32 +16,56 @@ function LoginPageContent() {
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+
     setError("");
   };
+
+  // 🔥 mockable login logic (important for testing)
+  const loginRequest = () =>
+    new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (!formData.email || !formData.password) {
+          reject(new Error("empty fields"));
+        } else if (formData.email.includes("fail")) {
+          reject(new Error("invalid credentials"));
+        } else {
+          resolve({
+            token: "fake-token",
+          });
+        }
+      }, 300);
+    });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
 
     try {
-      await new Promise((res) => setTimeout(res, 1000));
+      const result = await loginRequest();
 
-      localStorage.setItem("token", "fake-token");
-      const agencyTemplate = searchParams.get("template");
+      localStorage.setItem("token", result.token);
+
+      const template = searchParams.get("template");
       const isNewAgency = searchParams.get("newAgency") === "1";
 
-      if (agencyTemplate) {
-        localStorage.setItem("agency-template", agencyTemplate);
+      if (template) {
+        localStorage.setItem("agency-template", template);
       }
 
       if (isNewAgency) {
-        router.push(`/Dashboard/Agency?template=${agencyTemplate || "modern"}`);
+        router.push(
+          `/Dashboard/Agency?template=${template || "modern"}`
+        );
         return;
       }
 
       router.push("/Dashboard");
-    } catch {
+    } catch (err) {
       setError("حدث خطأ أثناء تسجيل الدخول");
     } finally {
       setLoading(false);
@@ -49,12 +73,21 @@ function LoginPageContent() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 text-right">
-      <div className="surface-card p-8 w-full max-w-md">
+    <div
+      dir="rtl"
+      className="min-h-screen flex items-center justify-center bg-slate-50"
+    >
+      <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow">
 
-        <h1 className="text-2xl font-bold mb-6">تسجيل الدخول</h1>
+        <h1 className="text-2xl font-bold mb-6 text-center">
+          تسجيل الدخول
+        </h1>
 
-        {error && <p className="text-red-500 mb-3">{error}</p>}
+        {error && (
+          <p className="text-red-500 mb-3 text-sm">
+            {error}
+          </p>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
 
@@ -62,27 +95,40 @@ function LoginPageContent() {
             type="email"
             name="email"
             placeholder="البريد الإلكتروني"
+            value={formData.email}
             onChange={handleChange}
-            className="w-full border rounded-xl px-3 py-2 text-right"
+            className="w-full border rounded-xl px-3 py-2"
           />
 
           <input
             type="password"
             name="password"
             placeholder="كلمة المرور"
+            value={formData.password}
             onChange={handleChange}
-            className="w-full border rounded-xl px-3 py-2 text-right"
+            className="w-full border rounded-xl px-3 py-2"
           />
 
-          <button className="btn-primary w-full">
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full py-2 rounded-xl text-white transition ${
+              loading
+                ? "bg-gray-400"
+                : "bg-indigo-600 hover:bg-indigo-700"
+            }`}
+          >
             {loading ? "جارٍ الدخول..." : "دخول"}
           </button>
 
         </form>
 
-        <p className="mt-4 text-sm">
+        <p className="mt-4 text-sm text-center">
           ليس لديك حساب؟{" "}
-          <a href="/Auth/register" className="text-indigo-600">
+          <a
+            href="/Auth/register"
+            className="text-indigo-600"
+          >
             إنشاء حساب
           </a>
         </p>
@@ -92,11 +138,10 @@ function LoginPageContent() {
   );
 }
 
-
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-slate-50" />}>
-      <LoginPageContent />
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginContent />
     </Suspense>
   );
 }
