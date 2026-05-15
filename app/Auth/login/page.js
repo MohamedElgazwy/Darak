@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useState } from "react";
+import { authApi } from "../../services/api";
 import { useRouter, useSearchParams } from "next/navigation";
 
 function LoginContent() {
@@ -24,21 +25,6 @@ function LoginContent() {
     setError("");
   };
 
-  // 🔥 mockable login logic (important for testing)
-  const loginRequest = () =>
-    new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (!formData.email || !formData.password) {
-          reject(new Error("empty fields"));
-        } else if (formData.email.includes("fail")) {
-          reject(new Error("invalid credentials"));
-        } else {
-          resolve({
-            token: "fake-token",
-          });
-        }
-      }, 300);
-    });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,9 +32,17 @@ function LoginContent() {
     setError("");
 
     try {
-      const result = await loginRequest();
+      const result = await authApi.login(formData);
 
-      localStorage.setItem("token", result.token);
+      const token = result?.token || result?.accessToken || result?.jwtToken;
+      if (token) {
+        localStorage.setItem("token", token);
+        localStorage.setItem("authToken", token);
+      }
+
+      if (result?.user) {
+        localStorage.setItem("user", JSON.stringify(result.user));
+      }
 
       const template = searchParams.get("template");
       const isNewAgency = searchParams.get("newAgency") === "1";
@@ -66,7 +60,7 @@ function LoginContent() {
 
       router.push("/Dashboard");
     } catch (err) {
-      setError("حدث خطأ أثناء تسجيل الدخول");
+      setError(err?.response?.data?.message || "حدث خطأ أثناء تسجيل الدخول");
     } finally {
       setLoading(false);
     }

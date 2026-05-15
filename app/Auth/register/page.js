@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { authApi } from "../../services/api";
 
 export default function RegisterPage() {
   const router = useRouter();
 
   const [formData, setFormData] = useState({
-    name: "",
+firstName: "",
+    lastName: "",
     email: "",
     phone: "",
     password: "",
@@ -25,7 +27,7 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      await new Promise((res) => setTimeout(res, 1000));
+      await authApi.register(formData);
 
       if (formData.role === "Agency") {
         router.push("/Agency/Create-Page?from=registration");
@@ -47,14 +49,14 @@ export default function RegisterPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
 
           <input
-            name="name"
+name="firstName"
             placeholder="الاسم الاول"
             onChange={handleChange}
             className="w-full border rounded-xl px-3 py-2 text-right"
           />
 
           <input
-            name="name"
+name="lastName"
             placeholder="الاسم الثانى"
             onChange={handleChange}
             className="w-full border rounded-xl px-3 py-2 text-right"

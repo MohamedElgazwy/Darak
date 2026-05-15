@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { propertyApi } from "../services/api";
 
 export default function AddProperty() {
   const router = useRouter();
@@ -55,12 +56,14 @@ export default function AddProperty() {
     }));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (status = "Draft") => {
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      await propertyApi.create({ ...formData, status });
       setShowSuccess(true);
-    }, 1500);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -206,10 +209,10 @@ export default function AddProperty() {
 
               {step === 4 ? (
                 <div className="flex gap-2">
-                  <button onClick={handleSubmit} className="btn-secondary">
+                  <button onClick={() => handleSubmit("Draft")} className="btn-secondary">
                     حفظ كمسودة
                   </button>
-                  <button onClick={handleSubmit} className="btn-primary">
+                  <button onClick={() => handleSubmit("PendingReview")} className="btn-primary">
                     إرسال للمراجعة
                   </button>
                 </div>
