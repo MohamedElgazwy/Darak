@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { accountApi } from "../services/api";
 import { useRouter } from "next/navigation";
+import { accountApi } from "../services/api";
 
 export default function ChangePasswordPage() {
   const router = useRouter();
@@ -12,24 +12,20 @@ export default function ChangePasswordPage() {
     newPassword: "",
     confirmPassword: "",
   });
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [showConfirmError, setShowConfirmError] = useState(false);
+
+  const passwordsDoNotMatch =
+    formData.confirmPassword.length > 0 && formData.newPassword !== formData.confirmPassword;
 
   const handleChange = (field) => (e) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [field]: e.target.value,
     }));
-
-    if (field === "confirmPassword") {
-      // Check if new password and confirm password match
-      if (formData.newPassword !== e.target.value) {
-        setShowConfirmError(true);
-      }
-    }
+    setError("");
+    setSuccess("");
   };
 
   const handleSubmit = async (e) => {
@@ -37,32 +33,30 @@ export default function ChangePasswordPage() {
     setLoading(true);
     setError("");
     setSuccess("");
-    setShowConfirmError(false);
 
-    // Validate password fields
+    if (!formData.currentPassword) {
+      setError("يرجى إدخال كلمة المرور الحالية");
+      setLoading(false);
+      return;
+    }
+
+    if (!formData.newPassword) {
+      setError("يرجى إدخال كلمة مرور جديدة");
+      setLoading(false);
+      return;
+    }
+
     if (formData.newPassword !== formData.confirmPassword) {
-      setShowConfirmError(true);
       setError("تأكيد كلمة المرور لا يتطابق مع كلمة المرور الجديدة");
       setLoading(false);
       return;
     }
 
-    // Check if current password is empty
-    if (!formData.currentPassword) {
-      setError("يرجى-enter كلمة المرور الحالية");
-      setLoading(false);
-      return;
-    }
-
-    // Check if new password is empty
-    if (!formData.newPassword) {
-      setError("يرجى-enter كلمة مرور جديدة");
-      setLoading(false);
-      return;
-    }
-
     try {
-      await accountApi.changePassword(formData);
+      await accountApi.changePassword({
+        currentPassword: formData.currentPassword,
+        newPassword: formData.newPassword,
+      });
       setSuccess("تم تغيير كلمة المرور بنجاح");
       setTimeout(() => {
         router.push("/UserProfile");
@@ -79,15 +73,9 @@ export default function ChangePasswordPage() {
       <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow">
         <h1 className="text-2xl font-bold mb-6 text-center">تغيير كلمة المرور</h1>
 
-        {error && (
-          <p className="text-red-500 mb-3 text-sm">{error}</p>
-        )}
-
-        {success && (
-          <p className="text-green-500 mb-3 text-sm">{success}</p>
-        )}
-
-        {showConfirmError && (
+        {error && <p className="text-red-500 mb-3 text-sm">{error}</p>}
+        {success && <p className="text-green-500 mb-3 text-sm">{success}</p>}
+        {passwordsDoNotMatch && (
           <p className="text-red-500 mb-3 text-sm">تأكد من تأكيد كلمة المرور الجديدة</p>
         )}
 
@@ -135,12 +123,10 @@ export default function ChangePasswordPage() {
             type="submit"
             disabled={loading}
             className={`w-full py-2 rounded-xl text-white transition ${
-              loading
-                ? "bg-gray-400"
-                : "bg-indigo-600 hover:bg-indigo-700"
+              loading ? "bg-gray-400" : "bg-indigo-600 hover:bg-indigo-700"
             }`}
           >
-            {loading ? "جارٍ التحديث..." : "تحديث كلمة المرور"}
+            {loading ? "جار التحديث..." : "تحديث كلمة المرور"}
           </button>
         </form>
 

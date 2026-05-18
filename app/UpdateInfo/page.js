@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { accountApi } from "../services/api";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { accountApi } from "../services/api";
 
 export default function UpdateInfoPage() {
   const router = useRouter();
@@ -11,10 +11,28 @@ export default function UpdateInfoPage() {
     firstName: "",
     lastName: "",
   });
-
   const [loading, setLoading] = useState(false);
+  const [loadingProfile, setLoadingProfile] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  useEffect(() => {
+    const fetchCurrentInfo = async () => {
+      try {
+        const user = await accountApi.getMe();
+        setFormData({
+          firstName: user?.firstName || user?.FirstName || "",
+          lastName: user?.lastName || user?.LastName || "",
+        });
+      } catch (err) {
+        setError(err?.response?.data?.message || "تعذر تحميل بيانات الحساب");
+      } finally {
+        setLoadingProfile(false);
+      }
+    };
+
+    fetchCurrentInfo();
+  }, []);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -32,7 +50,10 @@ export default function UpdateInfoPage() {
     setSuccess("");
 
     try {
-      await accountApi.updateInfo(formData);
+      await accountApi.updateInfo({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+      });
       setSuccess("تم تعديل البيانات بنجاح");
       setTimeout(() => {
         router.push("/UserProfile");
@@ -49,13 +70,8 @@ export default function UpdateInfoPage() {
       <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow">
         <h1 className="text-2xl font-bold mb-6 text-center">تعديل البيانات</h1>
 
-        {error && (
-          <p className="text-red-500 mb-3 text-sm">{error}</p>
-        )}
-
-        {success && (
-          <p className="text-green-500 mb-3 text-sm">{success}</p>
-        )}
+        {error && <p className="text-red-500 mb-3 text-sm">{error}</p>}
+        {success && <p className="text-green-500 mb-3 text-sm">{success}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
@@ -84,14 +100,12 @@ export default function UpdateInfoPage() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || loadingProfile}
             className={`w-full py-2 rounded-xl text-white transition ${
-              loading
-                ? "bg-gray-400"
-                : "bg-indigo-600 hover:bg-indigo-700"
+              loading || loadingProfile ? "bg-gray-400" : "bg-indigo-600 hover:bg-indigo-700"
             }`}
           >
-            {loading ? "جاري الحفظ..." : "حفظ التعديلات"}
+            {loadingProfile ? "جاري تحميل البيانات..." : loading ? "جاري الحفظ..." : "حفظ التعديلات"}
           </button>
         </form>
 

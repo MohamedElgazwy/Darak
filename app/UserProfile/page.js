@@ -1,8 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { accountApi } from "../services/api";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { accountApi } from "../services/api";
+
+const getValue = (user, ...keys) => {
+  const key = keys.find((item) => user?.[item] !== undefined && user?.[item] !== null);
+  return key ? user[key] : "";
+};
 
 export default function UserProfilePage() {
   const router = useRouter();
@@ -10,23 +15,22 @@ export default function UserProfilePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    fetchUserInfo();
-  }, []);
-
-  const fetchUserInfo = async () => {
+  const fetchUserInfo = useCallback(async () => {
     try {
       setLoading(true);
       const data = await accountApi.getMe();
       setUser(data);
       setError("");
     } catch (err) {
-      setError("فشل في تحميل بيانات المستخدم");
-      console.error(err);
+      setError(err?.response?.data?.message || "فشل في تحميل بيانات المستخدم");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchUserInfo();
+  }, [fetchUserInfo]);
 
   if (loading) {
     return (
@@ -65,7 +69,7 @@ export default function UserProfilePage() {
               <label className="text-sm font-medium text-slate-700">الاسم الأول</label>
               <input
                 type="text"
-                value={user.firstName}
+                value={getValue(user, "firstName", "FirstName")}
                 readOnly
                 className="w-full border rounded-xl px-3 py-2 bg-slate-100"
               />
@@ -75,7 +79,7 @@ export default function UserProfilePage() {
               <label className="text-sm font-medium text-slate-700">اسم العائلة</label>
               <input
                 type="text"
-                value={user.lastName}
+                value={getValue(user, "lastName", "LastName")}
                 readOnly
                 className="w-full border rounded-xl px-3 py-2 bg-slate-100"
               />
@@ -85,7 +89,7 @@ export default function UserProfilePage() {
               <label className="text-sm font-medium text-slate-700">البريد الإلكتروني</label>
               <input
                 type="email"
-                value={user.email}
+                value={getValue(user, "email", "Email")}
                 readOnly
                 className="w-full border rounded-xl px-3 py-2 bg-slate-100"
               />
@@ -95,7 +99,7 @@ export default function UserProfilePage() {
               <label className="text-sm font-medium text-slate-700">رقم الهاتف</label>
               <input
                 type="tel"
-                value={user.phoneNumber}
+                value={getValue(user, "phoneNumber", "PhoneNumber", "phone", "Phone")}
                 readOnly
                 className="w-full border rounded-xl px-3 py-2 bg-slate-100"
               />

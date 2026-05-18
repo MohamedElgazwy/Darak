@@ -15,14 +15,17 @@ export default function AddProperty() {
     description: "",
     price: "",
     propertyType: "Apartment",
-    status: "Draft",
-    design: "standard",
+    purpose: "Sale",
     bedrooms: "",
     bathrooms: "",
+    floor: "",
     area: "",
-    location: { city: "", street: "" },
+    city: "",
+    country: "Egypt",
+    latitude: "",
+    longitude: "",
+    address: "",
     images: [],
-    features: [],
   });
 
   const steps = [
@@ -56,10 +59,10 @@ export default function AddProperty() {
     }));
   };
 
-  const handleSubmit = async (status = "Draft") => {
+  const handleSubmit = async () => {
     setLoading(true);
     try {
-      await propertyApi.create({ ...formData, status });
+      await propertyApi.create(formData);
       setShowSuccess(true);
     } finally {
       setLoading(false);
@@ -134,8 +137,18 @@ export default function AddProperty() {
                     <select name="propertyType" onChange={handleInputChange} className="w-full rounded-xl border px-3 py-2.5">
                       <option value="Apartment">شقة</option>
                       <option value="Villa">فيلا</option>
+                      <option value="Compound">كمبوند</option>
+                      <option value="Chalet">شاليه</option>
                       <option value="Office">مكتب</option>
-                      <option value="Land">أرض</option>
+                      <option value="Shop">محل</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block text-sm">الغرض</label>
+                    <select name="purpose" onChange={handleInputChange} className="w-full rounded-xl border px-3 py-2.5">
+                      <option value="Sale">للبيع</option>
+                      <option value="Rent">للإيجار</option>
                     </select>
                   </div>
 
@@ -156,6 +169,7 @@ export default function AddProperty() {
                 <div className="grid gap-4 md:grid-cols-3">
                   <input placeholder="عدد الغرف" name="bedrooms" onChange={handleInputChange} className="rounded-xl border px-3 py-2.5 text-right" />
                   <input placeholder="عدد الحمامات" name="bathrooms" onChange={handleInputChange} className="rounded-xl border px-3 py-2.5 text-right" />
+                  <input placeholder="الدور" name="floor" onChange={handleInputChange} className="rounded-xl border px-3 py-2.5 text-right" />
                   <input placeholder="المساحة (م²)" name="area" onChange={handleInputChange} className="rounded-xl border px-3 py-2.5 text-right" />
                 </div>
               </div>
@@ -167,8 +181,39 @@ export default function AddProperty() {
                 <h2 className="text-2xl font-semibold">الموقع</h2>
 
                 <div className="grid gap-4 md:grid-cols-2">
-                  <input placeholder="المدينة" className="rounded-xl border px-3 py-2.5 text-right" />
-                  <input placeholder="العنوان" className="rounded-xl border px-3 py-2.5 text-right" />
+                  <select name="city" onChange={handleInputChange} className="rounded-xl border px-3 py-2.5 text-right">
+                    <option value="">اختر المدينة</option>
+                    <option value="Cairo">Cairo</option>
+                    <option value="Alexandria">Alexandria</option>
+                    <option value="Giza">Giza</option>
+                    <option value="PortSaid">PortSaid</option>
+                    <option value="Suez">Suez</option>
+                    <option value="Dakahlia">Dakahlia</option>
+                    <option value="RedSea">RedSea</option>
+                    <option value="Beheira">Beheira</option>
+                    <option value="Fayoum">Fayoum</option>
+                    <option value="Gharbia">Gharbia</option>
+                    <option value="Ismailia">Ismailia</option>
+                    <option value="Monufia">Monufia</option>
+                    <option value="Minya">Minya</option>
+                    <option value="Qalyubia">Qalyubia</option>
+                    <option value="NewValley">NewValley</option>
+                    <option value="Sharqia">Sharqia</option>
+                    <option value="SouthSinai">SouthSinai</option>
+                    <option value="KafrElSheikh">KafrElSheikh</option>
+                    <option value="Matrouh">Matrouh</option>
+                    <option value="Luxor">Luxor</option>
+                    <option value="Qena">Qena</option>
+                    <option value="NorthSinai">NorthSinai</option>
+                    <option value="Sohag">Sohag</option>
+                    <option value="Aswan">Aswan</option>
+                    <option value="Assiut">Assiut</option>
+                    <option value="BeniSuef">BeniSuef</option>
+                    <option value="Damietta">Damietta</option>
+                  </select>
+                  <input name="address" placeholder="العنوان" onChange={handleInputChange} className="rounded-xl border px-3 py-2.5 text-right" />
+                  <input name="latitude" type="number" step="any" placeholder="Latitude" onChange={handleInputChange} className="rounded-xl border px-3 py-2.5 text-right" />
+                  <input name="longitude" type="number" step="any" placeholder="Longitude" onChange={handleInputChange} className="rounded-xl border px-3 py-2.5 text-right" />
                 </div>
 
                 <div className="flex h-52 items-center justify-center rounded-xl border border-dashed bg-slate-50">
@@ -191,7 +236,7 @@ export default function AddProperty() {
                 <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
                   {formData.images.map((img, idx) => (
                     <div key={idx} className="relative">
-                      <img src={img.preview} className="aspect-square w-full object-cover rounded-xl" />
+                      <img src={img.preview} alt="" className="aspect-square w-full object-cover rounded-xl" />
                       <button onClick={() => handleRemoveImage(idx)} className="absolute left-2 top-2 bg-black text-white text-xs px-2 py-1 rounded">
                         حذف
                       </button>

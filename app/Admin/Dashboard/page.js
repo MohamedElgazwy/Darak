@@ -1,244 +1,211 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+import Pagination from "../../components/Pagination";
+import { propertyApi } from "../../services/api";
+
+const statusTabs = ["Pending", "Approved", "Rejected"];
+
+const statusLabels = {
+  Pending: "قيد المراجعة",
+  Approved: "منشور",
+  Rejected: "مرفوض",
+};
+
+const getAnnouncementId = (item) => item?.id || item?.announcementId || item?.propertyId;
+
+const normalizeAnnouncement = (item) => ({
+  id: getAnnouncementId(item),
+  title: item?.title || item?.name || "بدون عنوان",
+  owner: item?.owner?.name || item?.userName || item?.agencyName || "غير متاح",
+  type: item?.propertyType || item?.type || "-",
+  city: item?.city || "-",
+  price: Number(item?.price || 0),
+  status: item?.status || "Pending",
+  date: item?.createdAt || item?.date || "",
+});
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState("overview");
+  const [status, setStatus] = useState("Pending");
+  const [page, setPage] = useState(1);
+  const [announcements, setAnnouncements] = useState([]);
+  const [meta, setMeta] = useState({ totalPages: 1, totalCount: 0 });
+  const [lookups, setLookups] = useState({ governorates: [], propertyTypes: [], purposes: [], statuses: [] });
+  const [loading, setLoading] = useState(true);
+  const [actionId, setActionId] = useState(null);
+  const [error, setError] = useState("");
 
-  const stats = [
-    {
-      title: "إجمالي المستخدمين",
-      value: "15,230",
-      change: "+12%",
-      icon: "👥",
-      color: "bg-blue-50 text-blue-600",
-    },
-    {
-      title: "العقارات النشطة",
-      value: "4,300",
-      change: "+5%",
-      icon: "🏠",
-      color: "bg-green-50 text-green-600",
-    },
-    {
-      title: "قيد المراجعة",
-      value: "45",
-      change: "عاجل",
-      icon: "⏳",
-      color: "bg-orange-50 text-orange-600",
-    },
-    {
-      title: "إجمالي الأرباح",
-      value: "250k",
-      change: "+18%",
-      icon: "💰",
-      color: "bg-purple-50 text-purple-600",
-    },
-  ];
+  const loadAnnouncements = useCallback(async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const result = await propertyApi.listAdminPage({ status, page });
+      setAnnouncements((result.items || []).map(normalizeAnnouncement).filter((item) => item.id));
+      setMeta({
+        totalPages: Math.max(1, result.totalPages || 1),
+        totalCount: result.totalCount || result.items?.length || 0,
+      });
+    } catch (err) {
+      setError("تعذر تحميل الإعلانات الإدارية.");
+      setAnnouncements([]);
+      setMeta({ totalPages: 1, totalCount: 0 });
+    } finally {
+      setLoading(false);
+    }
+  }, [page, status]);
 
-  const [listings, setListings] = useState([
-    {
-      id: 101,
-      title: "فيلا مشمسة في الرحاب",
-      owner: "أحمد محسن",
-      type: "فيلا",
-      price: "8,500,000",
-      status: "قيد المراجعة",
-      date: "2024-02-10",
-    },
-    {
-      id: 102,
-      title: "مكتب في العاصمة الجديدة",
-      owner: "Capital Real Estate",
-      type: "تجاري",
-      price: "45,000 /شهريًا",
-      status: "قيد المراجعة",
-      date: "2024-02-09",
-    },
-    {
-      id: 103,
-      title: "دوبلكس في الزمالك",
-      owner: "سارة نبيل",
-      type: "شقة",
-      price: "12,000,000",
-      status: "منشور",
-      date: "2024-02-08",
-    },
-  ]);
+  useEffect(() => {
+    loadAnnouncements();
+  }, [loadAnnouncements]);
 
-  const handleAction = (id, action) => {
-    if (confirm(`هل أنت متأكد من ${action === "approve" ? "قبول" : "رفض"} هذا الإعلان؟`)) {
-      setListings((prev) =>
-        prev.map((item) =>
-          item.id === id
-            ? {
-                ...item,
-                status: action === "approve" ? "منشور" : "مرفوض",
-              }
-            : item
-        )
-      );
+  useEffect(() => {
+    const loadLookups = async () => {
+      const [governorates, propertyTypes, purposes, statuses] = await Promise.allSettled([
+        propertyApi.getGovernorates(),
+        propertyApi.getPropertyTypes(),
+        propertyApi.getPurposes(),
+        propertyApi.getStatuses(),
+      ]);
+
+      setLookups({
+        governorates: governorates.status === "fulfilled" ? governorates.value : [],
+        propertyTypes: propertyTypes.status === "fulfilled" ? propertyTypes.value : [],
+        purposes: purposes.status === "fulfilled" ? purposes.value : [],
+        statuses: statuses.status === "fulfilled" ? statuses.value : [],
+      });
+    };
+
+    loadLookups();
+  }, []);
+
+  const handleStatusChange = async (id, nextStatus) => {
+    if (!confirm(`هل تريد تغيير حالة الإعلان إلى ${statusLabels[nextStatus] || nextStatus}؟`)) return;
+
+    setActionId(id);
+    try {
+      await propertyApi.changeStatus(id, nextStatus);
+      await loadAnnouncements();
+    } finally {
+      setActionId(null);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col text-right">
-
-      <div className="flex flex-1 max-w-7xl mx-auto mt-15 w-full px-4 py-8 gap-6 flex-row-reverse">
-
-        {/* Sidebar */}
-        <aside className="w-64">
-          <div className="bg-white rounded-2xl shadow-sm border overflow-hidden sticky top-24">
-            <div className="p-6 border-b bg-gray-50">
-              <h2 className="font-bold text-lg">لوحة التحكم</h2>
-              <p className="text-xs text-gray-500">صلاحيات المشرف</p>
-            </div>
-
-            <nav className="p-4 space-y-1">
-              {[
-                { id: "overview", label: "نظرة عامة", icon: "📊" },
-                { id: "listings", label: "مراجعة العقارات", icon: "🛡️", badge: 45 },
-                { id: "users", label: "إدارة المستخدمين", icon: "👥" },
-                { id: "verifications", label: "التحقق", icon: "✅" },
-                { id: "reports", label: "التقارير", icon: "⚠️" },
-              ].map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveTab(item.id)}
-                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-semibold text-sm ${
-                    activeTab === item.id
-                      ? "bg-slate-900 text-white"
-                      : "text-gray-700 hover:bg-gray-100"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <span>{item.icon}</span>
-                    {item.label}
-                  </div>
-
-                  {item.badge && (
-                    <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
-                      {item.badge}
-                    </span>
-                  )}
-                </button>
-              ))}
-            </nav>
+    <div className="min-h-screen bg-slate-100 text-right">
+      <main className="container-shell py-28">
+        <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-950">لوحة مراجعة الإعلانات</h1>
+            <p className="mt-2 text-slate-600">إدارة الإعلانات وتغيير حالتها من نفس واجهة المشرف.</p>
           </div>
-        </aside>
+          <span className="w-fit rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm">
+            {meta.totalCount} إعلان
+          </span>
+        </div>
 
-        {/* Main */}
-        <main className="flex-1">
-
-          {/* Overview */}
-          {activeTab === "overview" && (
-            <div className="space-y-6">
-
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {stats.map((stat, i) => (
-                  <div key={i} className="bg-white p-6 rounded-2xl shadow-sm border">
-                    <div className="flex justify-between mb-4">
-                      <div className={`w-12 h-12 flex items-center justify-center rounded-xl ${stat.color}`}>
-                        {stat.icon}
-                      </div>
-                      <span className="text-xs font-bold">
-                        {stat.change}
-                      </span>
-                    </div>
-
-                    <h3 className="text-sm text-gray-500">{stat.title}</h3>
-                    <p className="text-3xl font-bold">{stat.value}</p>
-                  </div>
+        <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
+          <aside className="space-y-4">
+            <div className="surface-card p-4">
+              <h2 className="mb-3 font-semibold text-slate-900">الحالة</h2>
+              <div className="space-y-2">
+                {statusTabs.map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => {
+                      setStatus(tab);
+                      setPage(1);
+                    }}
+                    className={`w-full rounded-xl px-4 py-3 text-right text-sm font-semibold transition ${
+                      status === tab ? "bg-slate-950 text-white" : "border bg-white text-slate-700 hover:bg-slate-50"
+                    }`}
+                  >
+                    {statusLabels[tab]}
+                  </button>
                 ))}
               </div>
-
-              <div className="bg-white p-6 rounded-2xl border">
-                <h3 className="font-bold mb-4">تحليلات النظام</h3>
-                <div className="h-64 bg-gray-50 flex items-center justify-center">
-                  [ مخطط البيانات ]
-                </div>
-              </div>
-
             </div>
-          )}
 
-          {/* Listings */}
-          {activeTab === "listings" && (
-            <div className="bg-white rounded-2xl border overflow-hidden">
+            <div className="surface-card p-4">
+              <h2 className="mb-3 font-semibold text-slate-900">بيانات النظام</h2>
+              <LookupLine label="المدن" value={lookups.governorates.length} />
+              <LookupLine label="أنواع العقار" value={lookups.propertyTypes.length} />
+              <LookupLine label="الأغراض" value={lookups.purposes.length} />
+              <LookupLine label="الحالات" value={lookups.statuses.length} />
+            </div>
+          </aside>
 
-              <div className="p-6 border-b flex justify-between flex-row-reverse">
-                <div>
-                  <h3 className="font-bold text-lg">مراجعة العقارات</h3>
-                  <p className="text-sm text-gray-500">
-                    مراجعة وقبول أو رفض الإعلانات
-                  </p>
-                </div>
-              </div>
+          <section className="surface-card overflow-hidden">
+            <div className="border-b bg-white p-5">
+              <h2 className="text-xl font-bold text-slate-950">{statusLabels[status]}</h2>
+            </div>
 
-              <table className="w-full text-sm text-right">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-4">العقار</th>
-                    <th className="px-6 py-4">المالك</th>
-                    <th className="px-6 py-4">السعر</th>
-                    <th className="px-6 py-4">الحالة</th>
-                    <th className="px-6 py-4">الإجراءات</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {listings.map((item) => (
-                    <tr key={item.id} className="border-t">
-
-                      <td className="px-6 py-4">
-                        <p className="font-bold">{item.title}</p>
-                        <p className="text-xs text-gray-500">
-                          {item.type} • {item.date}
-                        </p>
-                      </td>
-
-                      <td className="px-6 py-4">{item.owner}</td>
-
-                      <td className="px-6 py-4">
-                        {item.price} جنيه
-                      </td>
-
-                      <td className="px-6 py-4">{item.status}</td>
-
-                      <td className="px-6 py-4">
-                        {item.status === "قيد المراجعة" ? (
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => handleAction(item.id, "approve")}
-                              className="bg-green-600 text-white px-3 py-1 rounded"
-                            >
+            {loading ? (
+              <div className="p-10 text-center text-slate-500">جارٍ تحميل الإعلانات...</div>
+            ) : error ? (
+              <div className="p-10 text-center text-red-600">{error}</div>
+            ) : announcements.length === 0 ? (
+              <div className="p-10 text-center text-slate-500">لا توجد إعلانات في هذه الحالة.</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[760px] text-sm">
+                  <thead className="bg-slate-50 text-slate-600">
+                    <tr>
+                      <th className="px-5 py-4">الإعلان</th>
+                      <th className="px-5 py-4">المالك</th>
+                      <th className="px-5 py-4">السعر</th>
+                      <th className="px-5 py-4">الحالة</th>
+                      <th className="px-5 py-4">الإجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {announcements.map((item) => (
+                      <tr key={item.id} className="border-t">
+                        <td className="px-5 py-4">
+                          <p className="font-bold text-slate-950">{item.title}</p>
+                          <p className="mt-1 text-xs text-slate-500">{item.type} · {item.city}</p>
+                        </td>
+                        <td className="px-5 py-4">{item.owner}</td>
+                        <td className="px-5 py-4">{item.price.toLocaleString()} جنيه</td>
+                        <td className="px-5 py-4">{statusLabels[item.status] || item.status}</td>
+                        <td className="px-5 py-4">
+                          <div className="flex flex-wrap gap-2">
+                            <Link href={`/Properties/${item.id}`} className="rounded-lg border px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">
+                              عرض
+                            </Link>
+                            <button disabled={actionId === item.id} onClick={() => handleStatusChange(item.id, "Approved")} className="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50">
                               قبول
                             </button>
-
-                            <button
-                              onClick={() => handleAction(item.id, "reject")}
-                              className="bg-red-600 text-white px-3 py-1 rounded"
-                            >
+                            <button disabled={actionId === item.id} onClick={() => handleStatusChange(item.id, "Rejected")} className="rounded-lg bg-red-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50">
                               رفض
                             </button>
+                            <button disabled={actionId === item.id} onClick={() => handleStatusChange(item.id, "Pending")} className="rounded-lg bg-slate-900 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50">
+                              مراجعة
+                            </button>
                           </div>
-                        ) : (
-                          <span className="text-gray-400 text-xs">
-                            عرض التفاصيل
-                          </span>
-                        )}
-                      </td>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
 
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-
+            <div className="border-t p-4">
+              <Pagination currentPage={page} totalPages={meta.totalPages} onPageChange={setPage} />
             </div>
-          )}
+          </section>
+        </div>
+      </main>
+    </div>
+  );
+}
 
-        </main>
-      </div>
+function LookupLine({ label, value }) {
+  return (
+    <div className="flex items-center justify-between border-t py-2 text-sm first:border-t-0">
+      <span className="text-slate-600">{label}</span>
+      <span className="font-bold text-slate-950">{value}</span>
     </div>
   );
 }

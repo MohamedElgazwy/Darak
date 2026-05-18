@@ -9,6 +9,15 @@ const navLinks = [
   { name: "إيجار", path: "/Search", query: { type: "rent" } },
   { name: "الوكالات", path: "/Agencies" },
   { name: "من نحن", path: "/About" },
+  // Admin sections
+  { name: "المستخدمون", path: "/Admin/Users" },
+  { name: "الشركة – نبذة", path: "/Admin/CompanyAbouts" },
+  { name: "الخدمات", path: "/Admin/CompanyServices" },
+  { name: "حزم", path: "/Admin/Packages" },
+  { name: "قوالب", path: "/Admin/Templates" },
+  { name: "دفعات", path: "/Admin/Payments" },
+  { name: "ملاحظات", path: "/Admin/Feedback" },
+  { name: "إشعارات", path: "/Admin/Notifications" },
 ];
 
 export default function Header() {
