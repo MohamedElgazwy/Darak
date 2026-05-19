@@ -10,121 +10,93 @@ export default function SmartSearch() {
     {
       role: "system",
       content:
-        "مرحبًا! أنا مساعد MAWA الذكي 🤖\nأخبرني ماذا تبحث عنه؟ (مثال: شقة 3 غرف في المعادي بسعر أقل من 5 مليون)",
+        "مرحبًا! أنا مساعد Darak الذكي 🤖\nأخبرني ماذا تبحث عنه؟ (مثال: شقة 3 غرف في المعادي بسعر أقل من 5 مليون)",
     },
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
   useEffect(() => {
-    scrollToBottom();
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!query.trim()) return;
 
-    const userMsg = { role: "user", content: query };
-    setMessages((prev) => [...prev, userMsg]);
+    setMessages((prev) => [...prev, { role: "user", content: query }]);
     setQuery("");
     setIsTyping(true);
 
+    // TODO: replace this stub with a real API call to your AI search endpoint
     setTimeout(() => {
       setIsTyping(false);
-
-      const aiResponse = {
-        role: "system",
-        content: "وجدت لك 3 عقارات مطابقة لطلبك في المعادي:",
-        results: [
-          {
-            id: 1,
-            title: "شقة فاخرة في المعادي دجلة",
-            price: "4,500,000",
-            image: "/images/property1.jpg",
-            specs: "3 غرف • 2 حمام • 180م²",
-          },
-          {
-            id: 2,
-            title: "دوبلكس حديث بالقرب من الكورنيش",
-            price: "5,200,000",
-            image: "/images/property5.jpg",
-            specs: "4 غرف • 3 حمام • 250م²",
-          },
-        ],
-      };
-
-      setMessages((prev) => [...prev, aiResponse]);
-    }, 2000);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "system",
+          content: "وجدت لك 2 عقارات مطابقة لطلبك:",
+          results: [
+            {
+              id: 1,
+              title: "شقة فاخرة في المعادي دجلة",
+              price: "4,500,000",
+              specs: "3 غرف • 2 حمام • 180م²",
+            },
+            {
+              id: 2,
+              title: "دوبلكس حديث بالقرب من الكورنيش",
+              price: "5,200,000",
+              specs: "4 غرف • 3 حمام • 250م²",
+            },
+          ],
+        },
+      ]);
+    }, 1800);
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden flex flex-col h-[600px] w-full max-w-4xl mx-auto">
+    <div className="flex h-[600px] w-full max-w-4xl mx-auto flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-xl">
 
       {/* Header */}
-      <div className="bg-gradient-to-r from-primary-600 to-primary-700 p-4 flex items-center gap-3 flex-row-reverse text-right">
-        <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md">
+      <div className="flex items-center gap-3 flex-row-reverse bg-gradient-to-r from-indigo-600 to-indigo-700 p-4 text-right">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-md">
           <span className="text-2xl">🤖</span>
         </div>
         <div>
-          <h3 className="text-white font-bold text-lg">المساعد الذكي</h3>
-          <p className="text-primary-100 text-xs">مدعوم بالبحث الذكي</p>
+          <h3 className="text-lg font-bold text-white">المساعد الذكي</h3>
+          <p className="text-xs text-indigo-200">مدعوم بالبحث الذكي</p>
         </div>
       </div>
 
-      {/* Chat Area */}
-      <div className="flex-grow overflow-y-auto p-6 space-y-6 bg-gray-50 text-right">
+      {/* Chat */}
+      <div className="flex-grow space-y-6 overflow-y-auto bg-slate-50 p-6 text-right">
         {messages.map((msg, idx) => (
-          <div
-            key={idx}
-            className={`flex ${
-              msg.role === "user" ? "justify-start" : "justify-end"
-            }`}
-          >
-            <div
-              className={`max-w-[80%] flex flex-col gap-2 ${
-                msg.role === "user" ? "items-start" : "items-end"
-              }`}
-            >
-              {/* Message Bubble */}
+          <div key={idx} className={`flex ${msg.role === "user" ? "justify-start" : "justify-end"}`}>
+            <div className={`flex max-w-[80%] flex-col gap-2 ${msg.role === "user" ? "items-start" : "items-end"}`}>
               <div
-                className={`p-4 rounded-2xl shadow-sm ${
+                className={`rounded-2xl p-4 shadow-sm ${
                   msg.role === "user"
-                    ? "bg-primary-600 text-white rounded-bl-none"
-                    : "bg-white text-gray-800 border border-gray-100 rounded-br-none"
+                    ? "rounded-bl-none bg-indigo-600 text-white"
+                    : "rounded-br-none border border-slate-100 bg-white text-slate-800"
                 }`}
               >
                 {msg.content}
               </div>
 
-              {/* Results */}
               {msg.results && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2 w-full">
+                <div className="mt-2 grid w-full grid-cols-1 gap-3 sm:grid-cols-2">
                   {msg.results.map((prop) => (
-                    <div
+                    <button
                       key={prop.id}
                       onClick={() => router.push(`/Properties/${prop.id}`)}
-                      className="bg-white p-3 rounded-xl border border-gray-200 shadow-sm cursor-pointer hover:shadow-md transition-all group text-right"
+                      className="rounded-xl border border-slate-200 bg-white p-3 text-right shadow-sm transition hover:shadow-md hover:border-indigo-300"
                     >
-                      <div className="h-32 bg-gray-200 rounded-lg mb-3 overflow-hidden relative">
-                        <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs">
-                          معاينة الصورة
-                        </div>
-
-                        <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">
-                          {prop.price} جنيه
-                        </div>
-                      </div>
-
-                      <h4 className="font-bold text-gray-900 text-sm mb-1 truncate group-hover:text-primary-600">
-                        {prop.title}
-                      </h4>
-
-                      <p className="text-xs text-gray-500">{prop.specs}</p>
-                    </div>
+                      <div className="mb-2 h-24 rounded-lg bg-slate-100" />
+                      <p className="truncate text-sm font-bold text-slate-900">{prop.title}</p>
+                      <p className="mt-0.5 text-xs font-semibold text-indigo-600">{prop.price} جنيه</p>
+                      <p className="mt-1 text-xs text-slate-400">{prop.specs}</p>
+                    </button>
                   ))}
                 </div>
               )}
@@ -134,10 +106,14 @@ export default function SmartSearch() {
 
         {isTyping && (
           <div className="flex justify-end">
-            <div className="bg-white p-4 rounded-2xl rounded-br-none border border-gray-100 shadow-sm flex gap-2">
-              <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
-              <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100"></span>
-              <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200"></span>
+            <div className="flex gap-1.5 rounded-2xl rounded-br-none border border-slate-100 bg-white p-4 shadow-sm">
+              {[0, 150, 300].map((delay) => (
+                <span
+                  key={delay}
+                  style={{ animationDelay: `${delay}ms` }}
+                  className="h-2 w-2 animate-bounce rounded-full bg-slate-300"
+                />
+              ))}
             </div>
           </div>
         )}
@@ -146,32 +122,21 @@ export default function SmartSearch() {
       </div>
 
       {/* Input */}
-      <form onSubmit={handleSearch} className="p-4 bg-white border-t border-gray-100">
+      <form onSubmit={handleSearch} className="border-t bg-white p-4">
         <div className="relative flex items-center">
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="اكتب وصف العقار الذي تبحث عنه..."
-            className="w-full pr-6 pl-14 py-4 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all shadow-inner text-right"
+            className="w-full rounded-full bg-slate-100 py-4 pl-14 pr-6 text-right text-slate-900 shadow-inner transition focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300"
           />
-
           <button
             type="submit"
-            className="absolute left-2 p-3 bg-primary-600 text-white rounded-full hover:bg-primary-700 transition-colors shadow-lg"
+            className="absolute left-2 rounded-full bg-indigo-600 p-3 text-white shadow-lg transition hover:bg-indigo-700 active:scale-95"
           >
-            <svg
-              className="w-5 h-5 transform -rotate-90"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-              />
+            <svg className="h-5 w-5 -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
             </svg>
           </button>
         </div>
